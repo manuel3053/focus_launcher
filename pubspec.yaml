@@ -31,6 +31,7 @@ environment:
 dependencies:
   device_apps: ^1.0.9
   battery_info: ^1.0.7
+  battery_plus: ^3.0.2
   flutter:
     sdk: flutter
 

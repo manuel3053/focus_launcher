@@ -32,11 +32,11 @@ class _LauncherScreenState extends State<LauncherScreen>{
      Di seguito le varie schermate con le funzionalità pensate/sviluppate
    - Widgets: inserisci e visualizza widget di sistema scorribili lungo l'asse verticale (DA SVILUPPARE)
    - Home:
-      # visualizzazione data e ora (IMPLEMENTATATA)
+      # visualizzazione data e ora (IMPLEMENTATA)
       # visualizzazione carica batteria (IMPLEMENTATA)
       # visualizzazione app preferite dall'utente (DA SVILUPPARE)
       # eventuali bottoni per accedere rapidamente alle funzionalità essenziali del telefono (DA SVILUPPARE)
-   - Apps: visualizzazione app dispositivo (DA SVILUPPARE)
+   - Apps: visualizzazione app dispositivo (IN SVILUPPO)
 
 
    - Settings (non accessibile da PageView): TOTALMENTE DA SVILUPPARE

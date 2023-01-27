@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:battery_info/battery_info_plugin.dart';
 import 'package:battery_info/enums/charging_status.dart';
 import 'package:battery_info/model/android_battery_info.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:battery_plus/battery_plus.dart';
 
 class Home extends StatefulWidget {
   const Home({required Key key}):super(key: key);
@@ -11,40 +14,33 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
   //inizializzazione e assegnamento data e ora
   final DateTime _dateTime = DateTime.now();
   final TimeOfDay _timeOfDay = TimeOfDay.now();
 
-  //inizializzazione e assegnamento dati batteria
-  String batteryLevel = "";
-  ChargingStatus chargingStatus = ChargingStatus.Discharging; //by default, it is not charging
-  int count=0;
+  //batteria
+  final Battery _battery = Battery();
+
+  BatteryState? _batteryState;
+  int _batteryLevel=0;
 
   @override
   void initState() {
-    AndroidBatteryInfo? infoAndroid = AndroidBatteryInfo();
-    Future.delayed(Duration.zero, () async { //there is async (await) execution inside it
-      infoAndroid = await BatteryInfoPlugin().androidBatteryInfo;
-      count++;
-      batteryLevel = infoAndroid!.batteryLevel.toString();
-      chargingStatus = infoAndroid!.chargingStatus!;
-      setState(() {
-        //refresh UI
-      });
-    });
-
-    BatteryInfoPlugin().androidBatteryInfoStream.listen((AndroidBatteryInfo? batteryInfo) {
-      //add listener to update values if there is changes
-      count++;
-      infoAndroid = batteryInfo;
-      batteryLevel = infoAndroid!.batteryLevel.toString();
-      chargingStatus = infoAndroid!.chargingStatus!;
-      setState(() {
-        //refresh UI
-      });
-    });
-
     super.initState();
+    _battery.batteryState.then(_updateBatteryState);
+    _battery.batteryLevel.then(_updateBatteryPercentage);
+  }
+
+  void _updateBatteryState(BatteryState state) {
+    if (_batteryState == state) return;
+    setState(() {
+      _batteryState = state;
+    });
+  }
+
+  void _updateBatteryPercentage(int level){
+    _batteryLevel = level;
   }
 
     @override
@@ -73,15 +69,12 @@ class _HomeState extends State<Home> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
-                      Text("ciao: $batteryLevel %"),
-                      Text(chargingStatus.toString()),
-                      Text(count.toString()),
+                      Text("ciao: $_batteryState %"),
+                      Text("ciao: $_batteryLevel"),
                     ],
                   ),
-
                 ],
               ),
-
             ],
           ),
         ),
