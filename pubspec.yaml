@@ -29,8 +29,9 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  device_apps: ^1.0.9
-  battery_info: ^1.0.7
+  device_apps: ^2.2.0
+  azlistview: ^2.0.0
+  flutter_slidable: ^2.0.0
   battery_plus: ^3.0.2
   flutter:
     sdk: flutter

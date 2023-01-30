@@ -33,6 +33,7 @@ class _AppsListScreenContent extends StatelessWidget {
 
           return Scrollbar(
             child: ListView.builder(
+                padding: EdgeInsets.all(40),
                 itemCount: apps.length,
                 itemBuilder: (BuildContext context, int position) {
                   Application app = apps[position];

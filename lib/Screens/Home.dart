@@ -1,8 +1,5 @@
 import 'dart:async';
 
-import 'package:battery_info/battery_info_plugin.dart';
-import 'package:battery_info/enums/charging_status.dart';
-import 'package:battery_info/model/android_battery_info.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:battery_plus/battery_plus.dart';
@@ -69,8 +66,8 @@ class _HomeState extends State<Home> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
-                      Text("ciao: $_batteryState %"),
-                      Text("ciao: $_batteryLevel"),
+                      Text("$_batteryState"),
+                      Text("$_batteryLevel %"),
                     ],
                   ),
                 ],
