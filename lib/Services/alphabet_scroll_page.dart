@@ -3,8 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class _AZItem extends ISuspensionBean{
-  String title;
-  String tag;
+  final String title;
+  final String tag;
 
   _AZItem({
     required this.title,
@@ -35,14 +35,7 @@ class _AlphabetScrollPageState extends State<AlphabetScrollPage>{
   @override
   void initState(){
     super.initState();
-    //for(i=0; i<widget.items.length; i++) {
-      //widget.items.map((item) => _AZItem(title: item, tag: item[0].toUpperCase())).toList();
-    //}
-    for(i=0; i<widget.items.length; i++){
-      items[i].title=widget.items[i];
-      items[i].tag=widget.items[0].toUpperCase();
-      //items.add(tmp_item);
-    }
+    items=widget.items.map((item) => _AZItem(title: item, tag: item[0].toUpperCase())).toList();
 
     SuspensionUtil.sortListBySuspensionTag(this.items);
     setState(() { });

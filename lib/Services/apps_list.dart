@@ -33,7 +33,7 @@ class _AppsListScreenContent extends StatelessWidget {
 
           return Scrollbar(
             child: ListView.builder(
-                padding: EdgeInsets.all(40),
+                padding: const EdgeInsets.all(40),
                 itemCount: apps.length,
                 itemBuilder: (BuildContext context, int position) {
                   Application app = apps[position];
@@ -47,7 +47,7 @@ class _AppsListScreenContent extends StatelessWidget {
                         )
                             : null,
                         onTap: () => onAppClicked(context, app),
-                        title: Text('${app.appName}'),
+                        title: Text(app.appName),
                       ),
                       const Divider(height: 1.0,)
                     ],
