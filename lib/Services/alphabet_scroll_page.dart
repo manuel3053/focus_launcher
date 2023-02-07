@@ -31,7 +31,6 @@ class AlphabetScrollPage extends StatefulWidget{
 
 class _AlphabetScrollPageState extends State<AlphabetScrollPage>{
   List<_AZItem> items=[];
-  int i=0;
   @override
   void initState(){
     super.initState();
@@ -43,9 +42,7 @@ class _AlphabetScrollPageState extends State<AlphabetScrollPage>{
 
   @override
   Widget build(BuildContext context) {
-    if (kDebugMode) {
-      print(items.length);
-    }
+
     return AzListView(
       padding: const EdgeInsets.all(16),
         data: items,
@@ -58,9 +55,10 @@ class _AlphabetScrollPageState extends State<AlphabetScrollPage>{
   }
 
   Widget _buildListItem(_AZItem item){
+    int i=0;
+    i++;
     return ListTile(
-      title: Text(item.title),
-      tileColor: Colors.red,
+      title: Text(item.title + i.toString()),
       onTap: () => widget.onClickedItem(item.title),
     );
   }
