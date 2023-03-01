@@ -31,6 +31,7 @@ environment:
 dependencies:
   device_apps: ^2.2.0
   azlistview: ^2.0.0
+  #app_usage: ^2.1.1
   flutter_slidable: ^2.0.0
   battery_plus: ^3.0.2
   flutter:

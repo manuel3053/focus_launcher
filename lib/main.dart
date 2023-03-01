@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-
 import 'Screens/Apps.dart';
 import 'Screens/Home.dart';
 import 'Screens/Widgets.dart';
 
 void main() => runApp(MyApp());
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -14,7 +12,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: Colors.grey,),
+      theme: ThemeData(brightness: Brightness.light),
+      darkTheme: ThemeData(brightness: Brightness.dark,),
       home: LauncherScreen(key: UniqueKey(),),
     );
   }

@@ -47,7 +47,7 @@ class _HomeState extends State<Home> {
       return Scaffold(
         body: Padding(
           padding: const EdgeInsets.only(
-              left: 30, right: 30, top: 50, bottom: 100),
+              left: 30, right: 30, top: 50, bottom: 50),
           child: Column(
             children: <Widget>[
               Row(
@@ -55,26 +55,31 @@ class _HomeState extends State<Home> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
 
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(_timeOfDay.format(context)),
-                      Text(df.format(_dateTime)),
-                    ],
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(_timeOfDay.format(context)),
+                          Text(df.format(_dateTime)),
+                        ],
+                      ),
 
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
-                      Text("$_batteryState"),
-                      Text("$_batteryLevel %"),
-                    ],
-                  ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          //Text("$_batteryState"),
+                          Text("tmp"),
+                          Text("$_batteryLevel %"),
+                        ],
+                      ),
                 ],
               ),
+
             ],
           ),
         ),
+
       );
     }
   }

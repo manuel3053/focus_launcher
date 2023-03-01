@@ -11,8 +11,8 @@ class Apps extends StatefulWidget {
   State<Apps> createState() => _AppsState();
 }
 class _AppsState extends State<Apps> {
-  List<String> appsName = [];
-  List<String> appsNameFiltered = [];
+  Set<Application> appsSetFiltered = {};
+  Set<Application> appsSet = {};
   int k=0;
   bool flag = true;
   String prova='';
@@ -47,6 +47,8 @@ class _AppsState extends State<Apps> {
               ),
             ),
           ),
+
+
           Expanded(
             child: FutureBuilder<List<Application>>(
                 future: DeviceApps.getInstalledApplications(
@@ -63,27 +65,19 @@ class _AppsState extends State<Apps> {
                   }
                   else {
                     List<Application> apps = data.data!;
+                    appsSet = apps.toSet();
 
-                    if(appsName.isEmpty) {
-                      for (Application app in apps) {
-                        appsName.add(app.appName + ' *');
-                      }
-                    }
-
-                    if(appsNameFiltered.isEmpty){
-                      appsNameFiltered=appsName;
-                    }
-
-                    if(kDebugMode){
-                      print('bho non capisco');
-                    }
-
-                    return Scaffold(
-                      body: AlphabetScrollPage(
-                        items: appsNameFiltered,
-                        key: UniqueKey(),
-                        onClickedItem: (String value) {},
-                      ),
+                    return Container(
+                      width: 400,
+                      child: Card(
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        child: AlphabetScrollPage(
+                          items: appsSetFiltered.isNotEmpty ? appsSetFiltered : appsSet, //appsNameFiltered.isNotEmpty ? appsNameFiltered : appsName,
+                          key: UniqueKey(),
+                          onClickedItem: (String value) {},
+                        ),
+                      )
                     );
                   }
                 }
@@ -96,16 +90,10 @@ class _AppsState extends State<Apps> {
   }
 
   void filtraApp(String val,) {
-    print('ciao');
-    print(appsNameFiltered.length);
-    for(int i=0; i<appsName.length; i++){
-      for(int j=0; j<appsName[i].length; j++){
-        String nome=appsName[i].substring(0,val.length);
-        print(nome+' !');
-        if(nome==val){
-          print('dovremmmo esserci');
-          appsNameFiltered.add(appsName[i]+' UP');
-        }
+    appsSetFiltered.clear();
+    for(int i=0; i<appsSet.length; i++){
+      if(appsSet.elementAt(i).appName.toLowerCase().contains(val)){
+        appsSetFiltered.add(appsSet.elementAt(i));
       }
     }
     setState(() {});
