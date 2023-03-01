@@ -1,5 +1,5 @@
-import 'dart:async';
-
+import 'Apps.dart';
+import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:battery_plus/battery_plus.dart';
@@ -15,6 +15,8 @@ class _HomeState extends State<Home> {
   //inizializzazione e assegnamento data e ora
   final DateTime _dateTime = DateTime.now();
   final TimeOfDay _timeOfDay = TimeOfDay.now();
+  Set<Application> homeApps = {};
+
 
   //batteria
   final Battery _battery = Battery();
@@ -75,6 +77,12 @@ class _HomeState extends State<Home> {
                       ),
                 ],
               ),
+
+              Column(
+                /*children: <Widget>[
+                  ListView.builder(itemBuilder: itemBuilder)
+                ],*/
+              )
 
             ],
           ),

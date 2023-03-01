@@ -67,17 +67,10 @@ class _AppsState extends State<Apps> {
                     List<Application> apps = data.data!;
                     appsSet = apps.toSet();
 
-                    return Container(
-                      width: 400,
-                      child: Card(
-                        elevation: 3,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        child: AlphabetScrollPage(
-                          items: appsSetFiltered.isNotEmpty ? appsSetFiltered : appsSet, //appsNameFiltered.isNotEmpty ? appsNameFiltered : appsName,
-                          key: UniqueKey(),
-                          onClickedItem: (String value) {},
-                        ),
-                      )
+                    return AlphabetScrollPage(
+                      items: appsSetFiltered.isNotEmpty ? appsSetFiltered : appsSet, //appsNameFiltered.isNotEmpty ? appsNameFiltered : appsName,
+                      key: UniqueKey(),
+                      onClickedItem: (String value) {},
                     );
                   }
                 }

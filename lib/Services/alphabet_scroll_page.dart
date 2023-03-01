@@ -31,6 +31,7 @@ class AlphabetScrollPage extends StatefulWidget{
 
 class _AlphabetScrollPageState extends State<AlphabetScrollPage>{
   List<_AZItem> items=[];
+  Set<Application> home={};
   /*/List<AppUsageInfo> infos = [];
 
   void getUsageStats() async {
@@ -59,7 +60,7 @@ class _AlphabetScrollPageState extends State<AlphabetScrollPage>{
   @override
   Widget build(BuildContext context) {
     return AzListView(
-      padding: const EdgeInsets.all(5),
+        padding: const EdgeInsets.all(5),
         data: items,
         itemCount: items.length,
         itemBuilder: (context, index){
@@ -89,7 +90,8 @@ class _AlphabetScrollPageState extends State<AlphabetScrollPage>{
             title: Text(app.appName, textAlign: TextAlign.center,),
             actions: <Widget>[
               TextButton(onPressed: () => app.uninstallApp(), child: const Text('Disinstalla')),
-              TextButton(onPressed: () => app.openSettingsScreen(), child: const Text('Impostazioni'))
+              TextButton(onPressed: () => app.openSettingsScreen(), child: const Text('Impostazioni')),
+              TextButton(onPressed: () => addFavorites(app), child: const Text("Aggiungi alla home")),
             ],
           );
         }
@@ -97,6 +99,12 @@ class _AlphabetScrollPageState extends State<AlphabetScrollPage>{
 
   }
 
+  addFavorites(Application app) {
+    home.add(app);
+  }
 
+  Set<Application> getFavorites(){
+    return home;
+  }
 
 }
