@@ -2,15 +2,14 @@ import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:installed_apps/app_info.dart';
 import 'package:installed_apps/installed_apps.dart';
 import 'package:flutter/material.dart';
-import '../Functions/user_preferences.dart';
 import '../Models/appswitch.dart';
 import '../Functions/time_functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
 class Apps extends StatefulWidget {
-  final List<String> appList;
-  Apps({super.key, required this.appList});
+  var appsTimerInfo = {};
+  Apps({super.key, required this.appsTimerInfo});
   @override
   State<Apps> createState() => _AppsState();
 }
@@ -20,9 +19,7 @@ class _AppsState extends State<Apps> with AppTime{
   late TextEditingController _startController;
   late TextEditingController _endController;
   late List<bool> toggleList;
-  late List<AppSwitch> list;
   late SharedPreferences prefs;
-  String? prova;
   DateTime? start;
   DateTime? end;
 
@@ -46,16 +43,8 @@ class _AppsState extends State<Apps> with AppTime{
   }
 
   init() async {
-    UserPreferences.setDisplayName("ciaone");
-    prova = UserPreferences.getDisplayName();
-    //toggleList = List.generate(widget.appList.length, (index) => false, growable: true);
-    prefs = await SharedPreferences.getInstance();
-
-  }
-
-  bool _getSwitchValue(int index, String appName) {
-    init();
-    return prefs.getInt(appName) as bool;
+    toggleList = List.generate(widget.appsTimerInfo.length, (index) => false, growable: true);
+    //widget.appsTimerInfo.
   }
 
   @override
@@ -76,9 +65,11 @@ class _AppsState extends State<Apps> with AppTime{
         ),
       ),
       body: ListView.builder(
-        itemCount: widget.appList.length,
+        itemCount: widget.appsTimerInfo.length,
         itemBuilder: (context, index) {
-          String appName = widget.appList[index];
+          String appName = widget.appsTimerInfo.keys.elementAt(index).toString();
+          List<String> values = widget.appsTimerInfo[appName];
+          bool isActive = values[0] as bool;
           return Card(
             child: SwitchListTile(
               onChanged: (bool value) async {
@@ -87,8 +78,8 @@ class _AppsState extends State<Apps> with AppTime{
                   prefs.setInt(appName, value as int);
                 });
               },
-              //value: toggleList[index],
-              value: _getSwitchValue(index, appName),
+              value: isActive,
+              //value: widget.appsTimerInfo[appName],
               title: GestureDetector(
                   onTap: () => InstalledApps.startApp(appName),
                   onLongPress: () => InstalledApps.openSettings(appName),

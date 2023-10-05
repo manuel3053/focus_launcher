@@ -5,7 +5,7 @@ class UserPreferences {
 
   static const _keyDisplayName = 'displayName';
   static Future init() async => _preferences = await SharedPreferences.getInstance();
-
-  static Future setDisplayName(String displayName) async => await _preferences!.setString(_keyDisplayName, displayName);
-  static String? getDisplayName() => _preferences!.getString(_keyDisplayName);
+  // appPkgName = key   value = 0/1 orario_inizio orario_fine
+  static Future setData(String appPkgName, List<String> value) async => await _preferences!.setStringList(appPkgName, value);
+  static List<String>? getData(String appPkgName) => _preferences!.getStringList(appPkgName);
 }

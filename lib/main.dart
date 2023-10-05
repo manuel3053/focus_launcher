@@ -40,13 +40,13 @@ class LauncherScreen extends StatefulWidget {
 class _LauncherScreenState extends State<LauncherScreen> {
   /*Set<Application> appsSetFiltered = {};
   Set<Application> appsSet = {};*/
-  late List<bool> toggleList;
   late List<AppInfo> installedApps = [];
   late List<String> installedAppsName = [];
   String? prova;
   //inizializzazione e assegnamento data e ora
   final DateTime _dateTime = DateTime.now();
   final TimeOfDay _timeOfDay = TimeOfDay.now();
+  var appsTimerInfo = {};
 
   //batteria
   final Battery _battery = Battery();
@@ -56,7 +56,6 @@ class _LauncherScreenState extends State<LauncherScreen> {
 
   @override
   void initState() {
-
     init();
     super.initState();
   }
@@ -64,13 +63,24 @@ class _LauncherScreenState extends State<LauncherScreen> {
   init() async {
     installedApps = await InstalledApps.getInstalledApps(true, true);
     for(int i=0; i<installedApps.length; i++){
-      installedAppsName.add(installedApps[i].packageName.toString());
+      String installedAppName = installedApps[i].packageName.toString();
+
+      if((UserPreferences.getData(installedAppName)) == null){
+        UserPreferences.setData(installedAppName, ['false', '00:00', '00:00']);
+        appsTimerInfo[installedAppName] = ['false', '00:00', '00:00'];
+      }
+      else{
+        appsTimerInfo[installedAppName] = UserPreferences.getData(installedAppName);
+      }
     }
-    toggleList = List.generate(installedApps.length, (index) => false, growable: true);
+
+
+
     _battery.batteryState.then(_updateBatteryState);
     _battery.batteryLevel.then(_updateBatteryPercentage);
-
-    print(prova);
+    //UserPreferences.setDisplayName("ciaone");
+    //prova = UserPreferences.getDisplayName();
+    print(appsTimerInfo.keys.elementAt(0).toString());
   }
 
   void _updateBatteryState(BatteryState state) {
@@ -121,7 +131,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Apps(appList: installedAppsName,)),
+                MaterialPageRoute(builder: (context) => Apps(appsTimerInfo: appsTimerInfo,)),
               );
             },
           ),
