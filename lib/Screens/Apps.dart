@@ -1,87 +1,142 @@
-import 'dart:ffi';
-
-import 'package:device_apps/device_apps.dart';
-import 'package:flutter/foundation.dart';
+import 'package:day_night_time_picker/day_night_time_picker.dart';
+import 'package:installed_apps/app_info.dart';
+import 'package:installed_apps/installed_apps.dart';
 import 'package:flutter/material.dart';
-import 'package:focus_launcher/Services/alphabet_scroll_page.dart';
+import '../Functions/user_preferences.dart';
+import '../Models/appswitch.dart';
+import '../Functions/time_functions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 class Apps extends StatefulWidget {
-  const Apps({required Key key}):super(key: key);
+  final List<String> appList;
+  Apps({super.key, required this.appList});
   @override
   State<Apps> createState() => _AppsState();
 }
-class _AppsState extends State<Apps> {
-  Set<Application> appsSetFiltered = {};
-  Set<Application> appsSet = {};
-  int k=0;
-  bool flag = true;
-  String prova='';
-  late TextEditingController _controller;
+
+class _AppsState extends State<Apps> with AppTime{
+  late TextEditingController _searchController;
+  late TextEditingController _startController;
+  late TextEditingController _endController;
+  late List<bool> toggleList;
+  late List<AppSwitch> list;
+  late SharedPreferences prefs;
+  String? prova;
+  DateTime? start;
+  DateTime? end;
 
   @override
   void initState() {
+    init();
+
+    _searchController = TextEditingController();
+    _startController = TextEditingController();
+    _endController = TextEditingController();
+
     super.initState();
-    _controller = TextEditingController();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _searchController.dispose();
+    _startController.dispose();
+    _searchController.dispose();
     super.dispose();
+  }
+
+  init() async {
+    UserPreferences.setDisplayName("ciaone");
+    prova = UserPreferences.getDisplayName();
+    //toggleList = List.generate(widget.appList.length, (index) => false, growable: true);
+    prefs = await SharedPreferences.getInstance();
+
+  }
+
+  bool _getSwitchValue(int index, String appName) {
+    init();
+    return prefs.getInt(appName) as bool;
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _controller,
-              onChanged: (String value) => filtraApp(value),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Search...',
-              ),
+      appBar: AppBar(
+        title: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: TextField(
+            controller: _searchController,
+            //onChanged: (String value) => filtraApp(value),
+            //onChanged: init(),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Search...',
             ),
           ),
-
-
-          Expanded(
-            child: FutureBuilder<List<Application>>(
-                future: DeviceApps.getInstalledApplications(
-                  includeAppIcons: false,
-                  includeSystemApps: true,
-                  onlyAppsWithLaunchIntent: true,
-                ),
-                builder: (BuildContext context, AsyncSnapshot<List<Application>> data) {
-                  if (data.data == null) {
-                    if(kDebugMode){
-                      print('non ce la faccio');
-                    }
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  else {
-                    List<Application> apps = data.data!;
-                    appsSet = apps.toSet();
-
-                    return AlphabetScrollPage(
-                      items: appsSetFiltered.isNotEmpty ? appsSetFiltered : appsSet, //appsNameFiltered.isNotEmpty ? appsNameFiltered : appsName,
-                      key: UniqueKey(),
-                      onClickedItem: (String value) {},
-                    );
-                  }
-                }
+        ),
+      ),
+      body: ListView.builder(
+        itemCount: widget.appList.length,
+        itemBuilder: (context, index) {
+          String appName = widget.appList[index];
+          return Card(
+            child: SwitchListTile(
+              onChanged: (bool value) async {
+                toggleList[index] = value;
+                setState(() {
+                  prefs.setInt(appName, value as int);
+                });
+              },
+              //value: toggleList[index],
+              value: _getSwitchValue(index, appName),
+              title: GestureDetector(
+                  onTap: () => InstalledApps.startApp(appName),
+                  onLongPress: () => InstalledApps.openSettings(appName),
+                  /*onDoubleTap: () async {
+                    start = await openTimePicker(context);
+                    end = await openTimePicker(context);
+                  },*/
+                onDoubleTap: (){
+                  showDialog(context: context, builder: (BuildContext context){
+                      return AlertDialog(
+                        actions: [
+                          TextButton(onPressed: () => Navigator.pop(context), child: Text('Discard')),
+                          TextButton(onPressed: (){}, child: Text('Ok')),
+                        ],
+                        title: Column(
+                          children: [
+                            TextField(
+                              controller: _startController,
+                              //onChanged: (String value) => filtraApp(value),
+                              //onChanged: init(),
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'start (h24)',
+                              ),
+                            ),
+                            TextField(
+                              controller: _endController,
+                              //onChanged: (String value) => filtraApp(value),
+                              //onChanged: init(),
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'end (h24)',
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                  });
+                },
+                  child: Text(appName),
+              ),
             ),
-          )
-        ],
+          );
+        },
       ),
     );
-
   }
-
+/*
   void filtraApp(String val,) {
     appsSetFiltered.clear();
     for(int i=0; i<appsSet.length; i++){
@@ -90,6 +145,6 @@ class _AppsState extends State<Apps> {
       }
     }
     setState(() {});
-  }
+  }*/
 
 }

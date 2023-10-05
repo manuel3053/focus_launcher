@@ -1,9 +1,8 @@
 import 'Apps.dart';
-import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:battery_plus/battery_plus.dart';
-
+/*
 class Home extends StatefulWidget {
   const Home({required Key key}):super(key: key);
   @override
@@ -79,9 +78,9 @@ class _HomeState extends State<Home> {
               ),
 
               Column(
-                /*children: <Widget>[
+                children: <Widget>[
                   ListView.builder(itemBuilder: itemBuilder)
-                ],*/
+                ],
               )
 
             ],
@@ -90,4 +89,4 @@ class _HomeState extends State<Home> {
 
       );
     }
-  }
+  }*/
