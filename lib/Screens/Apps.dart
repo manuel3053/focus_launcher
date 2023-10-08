@@ -13,36 +13,40 @@ class Apps extends StatefulWidget {
 
 class _AppsState extends State<Apps> {
   late TextEditingController _searchController;
-  late List<TextEditingController> _timeController = [];
-  late List<FocusNode> _focusNodes = [];
-  late List<bool> toggleList;
   late SharedPreferences prefs;
+  late List<DropdownMenuItem> _hour = [];
+  late List<DropdownMenuItem> _minute = [];
   var appsTimerInfoFiltered = {};
+
   DateTime? start;
   DateTime? end;
 
   @override
   void initState() {
-    init();
     appsTimerInfoFiltered = widget.appsTimerInfo;
-    _timeController = List.generate(4, (index) => TextEditingController());
     _searchController = TextEditingController();
-    _focusNodes = List.generate(4, (index) => FocusNode());
+    _hour = List.generate(
+        24,
+        (index) => DropdownMenuItem(
+              value: index < 10 ? '0${index.toString()}' : index.toString(),
+              child:
+                  Text(index < 10 ? '0${index.toString()}' : index.toString()),
+            ));
+    _minute = List.generate(
+        60,
+        (index) => DropdownMenuItem(
+              value: index < 10 ? '0${index.toString()}' : index.toString(),
+              child:
+                  Text(index < 10 ? '0${index.toString()}' : index.toString()),
+            ));
+
     super.initState();
   }
 
   @override
   void dispose() {
     _searchController.dispose();
-    for (int i = 0; i < 4; i++) {
-      _timeController[i].dispose();
-    }
     super.dispose();
-  }
-
-  init() async {
-    toggleList = List.generate(widget.appsTimerInfo.length, (index) => false,
-        growable: true);
   }
 
   @override
@@ -55,7 +59,6 @@ class _AppsState extends State<Apps> {
             autofocus: true,
             controller: _searchController,
             onChanged: (String value) => filtraApp(value),
-            //onChanged: init(),
             decoration: InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Search...',
@@ -63,159 +66,133 @@ class _AppsState extends State<Apps> {
           ),
         ),
       ),
-      body: ListView.builder(
-        itemCount: appsTimerInfoFiltered.length,
-        itemBuilder: (context, index) {
-          String appPkgName =
-              appsTimerInfoFiltered.keys.elementAt(index).toString();
-          List<String> values = appsTimerInfoFiltered[appPkgName];
-          String appName = values[0];
-          bool isActive = values[1] == '1' ? true : false;
-          return Card(
-            child: ListTile(
-              trailing: isActive ? Icon(Icons.access_time) : null,
-              title: GestureDetector(
-                onTap: () => InstalledApps.startApp(appPkgName),
-                onLongPress: () => InstalledApps.openSettings(appPkgName),
-                onDoubleTap: () {
-                  int focusIndex = 0;
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          contentPadding: EdgeInsets.all(8),
-                          actions: [
-                            TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: Text('Discard')),
-                            TextButton(
-                                onPressed: () {
-                                  if (((_timeController[0].text as int) < 24 &&
-                                          (_timeController[2].text as int) <
-                                              24) &&
-                                      ((_timeController[1].text as int) < 60 &&
-                                          (_timeController[3].text as int) <
-                                              60)) {
+      body: GestureDetector(
+        onHorizontalDragEnd: (e) =>  Navigator.pop(context),
+        child: ListView.builder(
+          itemCount: appsTimerInfoFiltered.length,
+          itemBuilder: (context, index) {
+            String appPkgName = appsTimerInfoFiltered.keys.elementAt(index).toString();
+            List<String> values = UserPreferences.getData(appPkgName) ?? appsTimerInfoFiltered[appPkgName];
+            String appName = values[0];
+            bool isActive = values[1] == '1' ? true : false;
+            return Card(
+              child: ListTile(
+                trailing: isActive ? Icon(Icons.access_time) : null,
+                title: GestureDetector(
+                  onTap: () => InstalledApps.startApp(appPkgName),
+                  onLongPress: () => InstalledApps.openSettings(appPkgName),
+                  onDoubleTap: () {
+                    List<String> dropdownValues = [
+                      values[2].substring(0, 2),
+                      values[2].substring(3, 5),
+                      values[3].substring(0, 2),
+                      values[3].substring(3, 5)
+                    ];
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            contentPadding: EdgeInsets.all(8),
+                            actions: [
+                              TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text('Discard')),
+                              TextButton(
+                                  onPressed: () {
                                     UserPreferences.setData(appPkgName, [
                                       appName,
                                       isActive ? '1' : '0',
-                                      '${_timeController[0]}:${_timeController[1]}',
-                                      '${_timeController[2]}:${_timeController[3]}'
+                                      '${dropdownValues[0]}:${dropdownValues[1]}',
+                                      '${dropdownValues[2]}:${dropdownValues[3]}'
                                     ]);
-                                  }
-                                  setState(() {});
-                                },
-                                child: Text('Save')),
-                          ],
-                          title: Text('Activate timer'),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Switch.adaptive(
-                                  value: isActive,
-                                  onChanged: (bool value) {
-                                    isActive = value;
-                                    List<String> valuesTmp = values;
-                                    valuesTmp[1] = value ? '1' : '0';
-                                    UserPreferences.setData(
-                                        appPkgName, valuesTmp);
-                                  }),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                    child: TextFormField(
-                                      focusNode: _focusNodes[0],
-                                      onFieldSubmitted: (value) {
-                                        focusIndex++;
-                                        FocusScope.of(context).requestFocus(
-                                            _focusNodes[focusIndex]);
-                                      },
-                                      maxLength: 2,
-                                      keyboardType: TextInputType.number,
-                                      controller: _timeController[0],
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'hh',
-                                      ),
-                                    ),
-                                  ),
-                                  Text(' : '),
-                                  Expanded(
-                                    child: TextFormField(
-                                      maxLength: 2,
-                                      keyboardType: TextInputType.number,
-                                      focusNode: _focusNodes[1],
-                                      onFieldSubmitted: (value) {
-                                        focusIndex++;
-                                        FocusScope.of(context).requestFocus(
-                                            _focusNodes[focusIndex]);
-                                      },
-                                      controller: _timeController[1],
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'mm',
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Divider(),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                    child: TextFormField(
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.deny(RegExp('[0-3]'))
-                                      ],
-                                      maxLength: 2,
-                                      focusNode: _focusNodes[2],
-                                      onFieldSubmitted: (value) {
-                                        focusIndex++;
-                                        FocusScope.of(context).requestFocus(
-                                            _focusNodes[focusIndex]);
-                                      },
-                                      keyboardType: TextInputType.number,
-                                      controller: _timeController[2],
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'hh',
-                                      ),
-                                    ),
-                                  ),
-                                  Text(' : '),
-                                  Expanded(
-                                    child: TextFormField(
-                                      maxLength: 2,
-                                      focusNode: _focusNodes[3],
-                                      onFieldSubmitted: (value) {
-                                        focusIndex++;
-                                      },
-                                      keyboardType: TextInputType.number,
-                                      controller: _timeController[3],
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'mm',
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                    setState(() {});
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('Save')),
                             ],
-                          ),
-                        );
-                      });
-                },
-                child: Text(appName),
+                            title: Text('Activate timer'),
+                            content: StatefulBuilder(
+                              builder:
+                                  (BuildContext context, StateSetter setState) {
+                                return Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Switch.adaptive(
+                                        value: isActive,
+                                        onChanged: (bool value) {
+                                          isActive = value;
+                                          List<String> valuesTmp = values;
+                                          valuesTmp[1] = value ? '1' : '0';
+                                          UserPreferences.setData(
+                                              appPkgName, valuesTmp);
+                                          setState(() {});
+                                        }),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        DropdownButton(
+                                          items: _hour,
+                                          onChanged: (v) {
+                                            setState(() {
+                                              dropdownValues[0] = v;
+                                            });
+                                          },
+                                          value: dropdownValues[0],
+                                        ),
+                                        Text(' : '),
+                                        DropdownButton(
+                                          items: _minute,
+                                          onChanged: (v) {
+                                            setState(() {
+                                              dropdownValues[1] = v;
+                                            });
+                                          },
+                                          value: dropdownValues[1],
+                                        ),
+                                      ],
+                                    ),
+                                    Divider(),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        DropdownButton(
+                                          items: _hour,
+                                          onChanged: (v) {
+                                            setState(() {
+                                              dropdownValues[2] = v;
+                                            });
+                                          },
+                                          value: dropdownValues[2],
+                                        ),
+                                        Text(' : '),
+                                        DropdownButton(
+                                          items: _minute,
+                                          onChanged: (v) {
+                                            setState(() {
+                                              dropdownValues[3] = v;
+                                            });
+                                          },
+                                          value: dropdownValues[3],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                          );
+                        });
+                  },
+                  child: Text(appName),
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
