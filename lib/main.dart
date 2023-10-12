@@ -28,31 +28,26 @@ class MyApp extends StatelessWidget {
           )
         )
       ),
-      /*theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),*/
-      home: const LauncherScreen(),
+      home: const LauncherHomepage(),
     );
   }
 }
 
-class LauncherScreen extends StatefulWidget {
-  const LauncherScreen({super.key});
+class LauncherHomepage extends StatefulWidget {
+  const LauncherHomepage({super.key});
 
   @override
-  State<LauncherScreen> createState() => _LauncherScreenState();
+  State<LauncherHomepage> createState() => _LauncherHomepageState();
 }
 
-class _LauncherScreenState extends State<LauncherScreen> {
+class _LauncherHomepageState extends State<LauncherHomepage> {
   late List<AppInfo> installedApps = [];
   late List<String> installedAppsName = [];
-  String? prova;
-  //inizializzazione e assegnamento data e ora
+
   final DateTime _dateTime = DateTime.now();
   final TimeOfDay _timeOfDay = TimeOfDay.now();
   var appsTimerInfo = {};
 
-  //batteria
   final Battery _battery = Battery();
 
   BatteryState? _batteryState;
@@ -65,7 +60,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final DateFormat df = DateFormat("dd/MM/yyyy");
+    final DateFormat dateFormat = DateFormat("dd/MM/yyyy");
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -77,8 +72,8 @@ class _LauncherScreenState extends State<LauncherScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text(_timeOfDay.format(context), style: Theme.of(context).textTheme.labelLarge,),
-                  Text(df.format(_dateTime)),
+                  Text(_timeOfDay.format(context)),
+                  Text(dateFormat.format(_dateTime)),
                 ],
               ),
               Text(UserPreferences.getBattery().toString()),
@@ -91,7 +86,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => Apps(
+                    builder: (context) => AppsScreen(
                           appsTimerInfo: appsTimerInfo,
                         )),
               );
