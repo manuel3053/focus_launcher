@@ -1,6 +1,5 @@
-import 'package:flutter_app_lock/flutter_app_lock.dart';
 import 'package:focus_launcher/Functions/user_preferences.dart';
-import 'package:focus_launcher/Screens/Lock.dart';
+import 'package:focus_launcher/Screens/LockAlert.dart';
 import 'package:installed_apps/installed_apps.dart';
 import 'package:flutter/material.dart';
 
@@ -24,21 +23,6 @@ class _AppsScreenState extends State<AppsScreen> {
   void initState() {
     appsTimerInfoFiltered = widget.appsTimerInfo;
     _searchController = TextEditingController();
-    _hour = List.generate(
-        24,
-        (index) => DropdownMenuItem(
-              value: index < 10 ? '0${index.toString()}' : index.toString(),
-              child:
-                  Text(index < 10 ? '0${index.toString()}' : index.toString()),
-            ));
-    _minute = List.generate(
-        60,
-        (index) => DropdownMenuItem(
-              value: index < 10 ? '0${index.toString()}' : index.toString(),
-              child:
-                  Text(index < 10 ? '0${index.toString()}' : index.toString()),
-            ));
-
     super.initState();
   }
 
@@ -121,7 +105,7 @@ class _AppsScreenState extends State<AppsScreen> {
                                 return Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Switch.adaptive(
+                                    Switch(
                                         value: isActive,
                                         onChanged: (bool value) {
                                           isActive = value;
@@ -217,11 +201,6 @@ class _AppsScreenState extends State<AppsScreen> {
     int iStart = values[0]*60 + values[1];
     int iEnd = values[2]*60 + values[3];
     int iCurrent = values[4]*60 + values[5];
-
-    print(iStart);
-    print(iEnd);
-    print(iCurrent);
-    print(TimeOfDay.now().hour);
 
     if(iCurrent>=iStart && iCurrent<=iEnd){
       showDialog(context: context, builder: (BuildContext buildContext){
