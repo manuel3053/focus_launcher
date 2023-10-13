@@ -18,8 +18,6 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
   late TextEditingController _searchController;
   late List<AppLockInfo> _appLockInfoList = [];
   List<AppLockInfo> _appLockInfoFilteredList = [];
-  var appsTimerInfoFiltered = {};
-
 
   DateTime? start;
   DateTime? end;
@@ -27,7 +25,7 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
   @override
   void initState() {
     _appLockInfoList = widget.appLockInfoList;
-    _appLockInfoFilteredList = widget.appLockInfoList;
+    _appLockInfoFilteredList = _appLockInfoList;
     _searchController = TextEditingController();
     super.initState();
   }
@@ -41,10 +39,9 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
+      bottomSheet: Padding(
+        padding: const EdgeInsets.only(left: 8, right: 8),
         child: TextField(
-          autofocus: true,
           controller: _searchController,
           onChanged: (String filter) {
             setState(() {
@@ -53,7 +50,7 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
             });
           },
           decoration: const InputDecoration(
-            border: OutlineInputBorder(),
+            border: InputBorder.none,
             labelText: 'Search...',
           ),
         ),
@@ -66,15 +63,8 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
             AppLockInfo appLockInfo = _appLockInfoFilteredList[index];
             int currentTime = TimeOfDay.now().hour*60 + TimeOfDay.now().minute;
             return GestureDetector(
-              //onTap: () => appLockCheck(appLockInfo, currentTime),
-              onTap: (){
-                //Navigator.pop(context);
-                //fare in modo che quando si apre l'app si chiude la pagina delle app
-                //oppure si resetta la tastiera
-                appLockCheck(appLockInfo, currentTime);
-              },
-              onLongPress: () =>
-                  InstalledApps.openSettings(appLockInfo.appPkgName),
+              onTap: () => appLockCheck(appLockInfo, currentTime),
+              onLongPress: () => InstalledApps.openSettings(appLockInfo.appPkgName),
               onDoubleTap: () {
                 showDialog(
                     context: context,
@@ -106,7 +96,6 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
       });
     }
     else{
-
       InstalledApps.startApp(appLockInfo.appPkgName);
       Navigator.pop(context);
     }

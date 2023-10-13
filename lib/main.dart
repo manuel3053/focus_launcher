@@ -41,6 +41,8 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
   final DateTime _dateTime = DateTime.now();
   final TimeOfDay _timeOfDay = TimeOfDay.now();
   final DateFormat dateFormat = DateFormat("dd/MM/yyyy");
+  String _phonePkgName = '';
+  String _cameraPkgName = '';
 
   @override
   void initState() {
@@ -52,12 +54,13 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GestureDetector(
-        onHorizontalDragEnd: (value){
-          //implementare apertura chiamate
+        /*behavior: HitTestBehavior.translucent,
+        onHorizontalDragEnd: (value) {
+          InstalledApps.startApp(_phonePkgName);
         },
         onHorizontalDragStart: (value){
-          //impkementare apertura fotocamera
-        },
+          InstalledApps.startApp(_cameraPkgName);
+        },*/
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -92,8 +95,13 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
     List<AppInfo> installedApps = await InstalledApps.getInstalledApps(true, true);
     for (int i = 0; i < installedApps.length; i++) {
       String appPkgName = installedApps[i].packageName.toString();
+      if(appPkgName.contains('camera')){
+        _cameraPkgName = appPkgName;
+      }
+      if(appPkgName.contains('dialer')){
+        _phonePkgName = appPkgName;
+      }
       String appName = installedApps[i].name.toString();
-
       try{
         AppLockInfo appLockInfo = await UserPreferences.getAppLockInfo(appPkgName);
         appLockInfoList.add(appLockInfo);
@@ -109,5 +117,6 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
         appLockInfoList.add(appLockInfo);
       }
     }
+    print(appLockInfoList[0].appName);
   }
 }
