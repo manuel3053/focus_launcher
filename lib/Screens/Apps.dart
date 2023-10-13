@@ -1,27 +1,33 @@
+import 'package:focus_launcher/Classes/app_lock_info.dart';
 import 'package:focus_launcher/Functions/user_preferences.dart';
 import 'package:focus_launcher/Screens/LockAlert.dart';
+import 'package:focus_launcher/Screens/LockSetup.dart';
 import 'package:installed_apps/installed_apps.dart';
 import 'package:flutter/material.dart';
 
+import '../Functions/minutes_to_time_format.dart';
+
 class AppsScreen extends StatefulWidget {
-  var appsTimerInfo = {};
-  AppsScreen({super.key, required this.appsTimerInfo});
+  List<AppLockInfo> appLockInfoList;
+  AppsScreen({super.key, required this.appLockInfoList});
   @override
   State<AppsScreen> createState() => _AppsScreenState();
 }
 
-class _AppsScreenState extends State<AppsScreen> {
+class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
   late TextEditingController _searchController;
-  late List<DropdownMenuItem> _hour = [];
-  late List<DropdownMenuItem> _minute = [];
+  late List<AppLockInfo> _appLockInfoList = [];
+  List<AppLockInfo> _appLockInfoFilteredList = [];
   var appsTimerInfoFiltered = {};
+
 
   DateTime? start;
   DateTime? end;
 
   @override
   void initState() {
-    appsTimerInfoFiltered = widget.appsTimerInfo;
+    _appLockInfoList = widget.appLockInfoList;
+    _appLockInfoFilteredList = widget.appLockInfoList;
     _searchController = TextEditingController();
     super.initState();
   }
@@ -41,7 +47,12 @@ class _AppsScreenState extends State<AppsScreen> {
           child: TextField(
             autofocus: true,
             controller: _searchController,
-            onChanged: (String value) => filtraApp(value),
+            onChanged: (String filter) {
+              setState(() {
+                _appLockInfoFilteredList =
+                    filterAppTimerInfo(filter, _appLockInfoList);
+              });
+            },
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Search...',
@@ -52,135 +63,27 @@ class _AppsScreenState extends State<AppsScreen> {
       body: GestureDetector(
         onHorizontalDragEnd: (e) => Navigator.pop(context),
         child: ListView.builder(
-          itemCount: appsTimerInfoFiltered.length,
+          itemCount: _appLockInfoFilteredList.length,
           itemBuilder: (context, index) {
-            String appPkgName =
-                appsTimerInfoFiltered.keys.elementAt(index).toString();
-            List<String> values = UserPreferences.getData(appPkgName) ??
-                appsTimerInfoFiltered[appPkgName];
-            String appName = values[0];
-            bool isActive = values[1] == '1' ? true : false;
-            return Card(
-              child: ListTile(
-                trailing: isActive ? const Icon(Icons.access_time) : null,
-                title: GestureDetector(
-                  onTap: () => lockCheck(values[2], values[3], "${TimeOfDay.now().hour}:${TimeOfDay.now().minute}", appPkgName),
-                  onLongPress: () =>
-                      InstalledApps.openSettings(appPkgName),
-                  onDoubleTap: () {
-                    List<String> dropdownValues = [
-                      values[2].substring(0, 2),
-                      values[2].substring(3, 5),
-                      values[3].substring(0, 2),
-                      values[3].substring(3, 5)
-                    ];
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            contentPadding: const EdgeInsets.all(8),
-                            actions: [
-                              TextButton(
-                                  onPressed: () =>
-                                      Navigator.pop(context),
-                                  child: const Text('Discard')),
-                              TextButton(
-                                  onPressed: () {
-                                    UserPreferences.setData(
-                                        appPkgName, [
-                                      appName,
-                                      isActive ? '1' : '0',
-                                      '${dropdownValues[0]}:${dropdownValues[1]}',
-                                      '${dropdownValues[2]}:${dropdownValues[3]}'
-                                    ]);
-                                    setState(() {});
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text('Save')),
-                            ],
-                            title: const Text('Activate timer'),
-                            content: StatefulBuilder(
-                              builder: (BuildContext context,
-                                  StateSetter setState) {
-                                return Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Switch(
-                                        value: isActive,
-                                        onChanged: (bool value) {
-                                          isActive = value;
-                                          List<String> valuesTmp =
-                                              values;
-                                          valuesTmp[1] =
-                                          value ? '1' : '0';
-                                          UserPreferences.setData(
-                                              appPkgName, valuesTmp);
-                                          setState(() {});
-                                        }),
-                                    Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.center,
-                                      children: [
-                                        DropdownButton(
-                                          items: _hour,
-                                          onChanged: (v) {
-                                            setState(() {
-                                              dropdownValues[0] = v;
-                                            });
-                                          },
-                                          value: dropdownValues[0],
-                                        ),
-                                        const Text(' : '),
-                                        DropdownButton(
-                                          items: _minute,
-                                          onChanged: (v) {
-                                            setState(() {
-                                              dropdownValues[1] = v;
-                                            });
-                                          },
-                                          value: dropdownValues[1],
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.center,
-                                      children: [
-                                        DropdownButton(
-                                          items: _hour,
-                                          onChanged: (v) {
-                                            setState(() {
-                                              dropdownValues[2] = v;
-                                            });
-                                          },
-                                          value: dropdownValues[2],
-                                        ),
-                                        const Text(' : '),
-                                        DropdownButton(
-                                          items: _minute,
-                                          onChanged: (v) {
-                                            setState(() {
-                                              dropdownValues[3] = v;
-                                            });
-                                          },
-                                          value: dropdownValues[3],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
-                          );
-                        });
-                  },
-                  child: Text(appName),
-                ),
-              )
+            AppLockInfo appLockInfo = _appLockInfoFilteredList[index];
+            int currentTime = TimeOfDay.now().hour*60 + TimeOfDay.now().minute;
+            return GestureDetector(
+              onTap: () => appLockCheck(appLockInfo, currentTime),
+              onLongPress: () =>
+                  InstalledApps.openSettings(appLockInfo.appPkgName),
+              onDoubleTap: () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return LockSetup(appLockInfo: appLockInfo);
+                    });
+              },
+              child: Card(
+                child: ListTile(
+                  trailing: appLockInfo.isActive ? const Icon(Icons.access_time) : null,
+                  title: Text(appLockInfo.appName),
+                  ),
+                )
             );
           },
         ),
@@ -188,38 +91,34 @@ class _AppsScreenState extends State<AppsScreen> {
     );
   }
 
-  void lockCheck(String start, String end, String current, String appPkgName){
-    List<int> values = [
-      int.tryParse(start.substring(0, 2)) ?? 0,
-      int.tryParse(start.substring(3, 5)) ?? 0,
-      int.tryParse(end.substring(0, 2)) ?? 0,
-      int.tryParse(end.substring(3, 5)) ?? 0,
-      int.tryParse(current.substring(0, 2)) ?? 0,
-      int.tryParse(current.substring(3, 5)) ?? 0
-    ];
-
-    int iStart = values[0]*60 + values[1];
-    int iEnd = values[2]*60 + values[3];
-    int iCurrent = values[4]*60 + values[5];
-
-    if(iCurrent>=iStart && iCurrent<=iEnd){
+  void appLockCheck(AppLockInfo appLockInfo, int currentTime){
+    if(currentTime>=appLockInfo.startAppMinuteLock && currentTime<=appLockInfo.endAppMinuteLock){
+      String endLock = hhmm(appLockInfo.endAppMinuteLock);
       showDialog(context: context, builder: (BuildContext buildContext){
-        return LockScreen(end: end);
+        return LockAlert(end: endLock);
       });
     }
     else{
-      InstalledApps.startApp(appPkgName);
+      InstalledApps.startApp(appLockInfo.appPkgName);
     }
   }
 
-  void filtraApp(String val) {
-    appsTimerInfoFiltered = {};
+  List<AppLockInfo> filterAppTimerInfo(String filter, List<AppLockInfo> appLockInfoList) {
+    List<AppLockInfo> appLockInfoListReturn = [];
+    for(AppLockInfo appLockInfo in appLockInfoList){
+      if(appLockInfo.appName.toLowerCase().contains(filter)){
+        appLockInfoListReturn.add(appLockInfo);
+      }
+    }
+
+    /*
     for (final key in widget.appsTimerInfo.keys) {
       List<String> values = widget.appsTimerInfo[key];
       if (values[0].toString().toLowerCase().contains(val)) {
         appsTimerInfoFiltered[key] = values;
       }
-    }
-    setState(() {});
+    }*/
+    return appLockInfoListReturn;
   }
+
 }

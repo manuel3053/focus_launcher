@@ -1,38 +1,51 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:focus_launcher/Classes/app_lock_info.dart';
 
 import '../Functions/user_preferences.dart';
 
-class LockSetup extends StatefulWidget{
-  LockSetup({super.key, required this.appPkgName});
-  final List<String> appInfo;
+class LockSetup extends StatefulWidget {
+  LockSetup({super.key, required this.appLockInfo});
+  final AppLockInfo appLockInfo;
 
   @override
   State<LockSetup> createState() => LockSetupState();
 }
 
-class LockSetupState extends State<LockSetup>{
-  late List<DropdownMenuItem> _hour = [];
-  late List<DropdownMenuItem> _minute = [];
+class LockSetupState extends State<LockSetup> {
+  late List<DropdownMenuItem> _hours = [];
+  late List<DropdownMenuItem> _minutes = [];
+  int _hourStart = 0;
+  int _minuteStart = 0;
+  int _hourEnd = 0;
+  int _minuteEnd = 0;
+  bool _isActive = false;
 
   @override
-  void initState(){
-    _hour = List.generate(
-        24,
-            (index) => DropdownMenuItem(
-          value: index < 10 ? '0${index.toString()}' : index.toString(),
-          child:
-          Text(index < 10 ? '0${index.toString()}' : index.toString()),
-        ));
-    _minute = List.generate(
-        60,
-            (index) => DropdownMenuItem(
-          value: index < 10 ? '0${index.toString()}' : index.toString(),
-          child:
-          Text(index < 10 ? '0${index.toString()}' : index.toString()),
-        ));
+  void initState() {
     super.initState();
+    _hourStart = widget.appLockInfo.startAppMinuteLock~/60;
+    _minuteStart = widget.appLockInfo.startAppMinuteLock%60;
+    _hourEnd = widget.appLockInfo.endAppMinuteLock%60;
+    _minuteEnd = widget.appLockInfo.endAppMinuteLock%60;
+
+    _isActive = widget.appLockInfo.isActive;
+    _hours = List.generate(
+        24,
+        (index) => DropdownMenuItem(
+              value: index,
+              child:
+                  Text(index < 10 ? '0${index.toString()}' : index.toString()),
+            ));
+    _minutes = List.generate(
+        60,
+        (index) => DropdownMenuItem(
+              value: index,
+              child:
+                  Text(index < 10 ? '0${index.toString()}' : index.toString()),
+            ));
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -40,100 +53,83 @@ class LockSetupState extends State<LockSetup>{
       contentPadding: const EdgeInsets.all(8),
       actions: [
         TextButton(
-            onPressed: () =>
-                Navigator.pop(context),
+            onPressed: () => Navigator.pop(context),
             child: const Text('Discard')),
         TextButton(
             onPressed: () {
-              UserPreferences.setData(
-                  widget.appPkgName, [
-                appName,
-                isActive ? '1' : '0',
-                '${dropdownValues[0]}:${dropdownValues[1]}',
-                '${dropdownValues[2]}:${dropdownValues[3]}'
-              ]);
+              widget.appLockInfo.isActive = _isActive;
+              widget.appLockInfo.startAppMinuteLock = _hourStart * 60 + _minuteStart;
+              widget.appLockInfo.endAppMinuteLock = _hourEnd * 60 + _minuteEnd;
+              UserPreferences.setAppLockInfo(widget.appLockInfo);
               setState(() {});
               Navigator.pop(context);
             },
             child: const Text('Save')),
       ],
-      title: const Text('Activate timer'),
-      content: StatefulBuilder(
-        builder: (BuildContext context,
-            StateSetter setState) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
+      title: const Text('Activate AppLockTimer'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Switch(
+              value: _isActive,
+              onChanged: (bool value) {
+                _isActive = value;
+                setState(() {});
+              }),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Switch(
-                  value: isActive,
-                  onChanged: (bool value) {
-                    isActive = value;
-                    List<String> valuesTmp =
-                        values;
-                    valuesTmp[1] =
-                    value ? '1' : '0';
-                    UserPreferences.setData(
-                        widget.appPkgName, valuesTmp);
-                    setState(() {});
-                  }),
-              Row(
-                mainAxisAlignment:
-                MainAxisAlignment.center,
-                crossAxisAlignment:
-                CrossAxisAlignment.center,
-                children: [
-                  DropdownButton(
-                    items: _hour,
-                    onChanged: (v) {
-                      setState(() {
-                        dropdownValues[0] = v;
-                      });
-                    },
-                    value: dropdownValues[0],
-                  ),
-                  const Text(' : '),
-                  DropdownButton(
-                    items: _minute,
-                    onChanged: (v) {
-                      setState(() {
-                        dropdownValues[1] = v;
-                      });
-                    },
-                    value: dropdownValues[1],
-                  ),
-                ],
+              DropdownButton(
+                items: _hours,
+                onChanged: (v) {
+                  setState(() {
+                    _hourStart = v;
+                  });
+                },
+                value: _hourStart,
               ),
-              Row(
-                mainAxisAlignment:
-                MainAxisAlignment.center,
-                crossAxisAlignment:
-                CrossAxisAlignment.center,
-                children: [
-                  DropdownButton(
-                    items: _hour,
-                    onChanged: (v) {
-                      setState(() {
-                        dropdownValues[2] = v;
-                      });
-                    },
-                    value: dropdownValues[2],
-                  ),
-                  const Text(' : '),
-                  DropdownButton(
-                    items: _minute,
-                    onChanged: (v) {
-                      setState(() {
-                        dropdownValues[3] = v;
-                      });
-                    },
-                    value: dropdownValues[3],
-                  ),
-                ],
+              const Text(' : '),
+              DropdownButton(
+                items: _minutes,
+                onChanged: (v) {
+                  setState(() {
+                    _minuteStart = v;
+                  });
+                },
+                value: _minuteStart,
               ),
             ],
-          );
-        },
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              DropdownButton(
+                items: _hours,
+                onChanged: (v) {
+                  setState(() {
+                    _hourEnd = v;
+                  });
+                },
+                value: _hourEnd,
+              ),
+              const Text(' : '),
+              DropdownButton(
+                items: _minutes,
+                onChanged: (v) {
+                  setState(() {
+                    _minuteEnd = v;
+                  });
+                },
+                value: _minuteEnd,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 }
+
+

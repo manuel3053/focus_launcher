@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 
-class LockScreen extends StatefulWidget {
-  const LockScreen({
+class LockAlert extends StatefulWidget {
+  const LockAlert({
     Key? key,
     required this.end,
   }) : super(key: key);
@@ -11,10 +11,10 @@ class LockScreen extends StatefulWidget {
   final String end;
 
   @override
-  _LockScreenState createState() => _LockScreenState();
+  _LockAlertState createState() => _LockAlertState();
 }
 
-class _LockScreenState extends State<LockScreen> {
+class _LockAlertState extends State<LockAlert> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(

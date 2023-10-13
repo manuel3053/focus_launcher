@@ -1,5 +1,5 @@
-import 'package:battery_plus/battery_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:focus_launcher/Classes/app_lock_info.dart';
 import 'package:focus_launcher/Functions/user_preferences.dart';
 import 'package:installed_apps/app_info.dart';
 import 'package:installed_apps/installed_apps.dart';
@@ -21,13 +21,8 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(brightness: Brightness.dark),
       darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        textTheme: TextTheme(
-          labelLarge: TextStyle(
-            fontSize: 40
-          )
-        )
-      ),
+          brightness: Brightness.dark,
+          textTheme: TextTheme(labelLarge: TextStyle(fontSize: 40))),
       home: const LauncherHomepage(),
     );
   }
@@ -41,16 +36,11 @@ class LauncherHomepage extends StatefulWidget {
 }
 
 class _LauncherHomepageState extends State<LauncherHomepage> {
-  late List<AppInfo> installedApps = [];
-  late List<String> installedAppsName = [];
+  late List<AppLockInfo> appLockInfoList = [];
 
   final DateTime _dateTime = DateTime.now();
   final TimeOfDay _timeOfDay = TimeOfDay.now();
-  var appsTimerInfo = {};
-
-  final Battery _battery = Battery();
-
-  BatteryState? _batteryState;
+  final DateFormat dateFormat = DateFormat("dd/MM/yyyy");
 
   @override
   void initState() {
@@ -60,76 +50,57 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
 
   @override
   Widget build(BuildContext context) {
-    final DateFormat dateFormat = DateFormat("dd/MM/yyyy");
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(_timeOfDay.format(context)),
-                  Text(dateFormat.format(_dateTime)),
-                ],
-              ),
-              Text(UserPreferences.getBattery().toString()),
-            ],
-          ),
-          IconButton(
-            iconSize: 50,
-            icon: Icon(Icons.apps),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => AppsScreen(
-                          appsTimerInfo: appsTimerInfo,
-                        )),
-              );
-            },
-          ),
-        ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              '${_timeOfDay.format(context)}\n${dateFormat.format(_dateTime)}',
+              textAlign: TextAlign.center,
+            ),
+            IconButton(
+              iconSize: 50,
+              icon: Icon(Icons.apps),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AppsScreen(
+                            appLockInfoList: appLockInfoList,
+                          )),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 
   init() async {
-    installedApps = await InstalledApps.getInstalledApps(true, true);
+    List<AppInfo> installedApps = await InstalledApps.getInstalledApps(true, true);
     for (int i = 0; i < installedApps.length; i++) {
-      String installedAppPkgName = installedApps[i].packageName.toString();
-      String installedAppName = installedApps[i].name.toString();
+      String appPkgName = installedApps[i].packageName.toString();
+      String appName = installedApps[i].name.toString();
 
-      if ((UserPreferences.getData(installedAppName)) == null) {
-        UserPreferences.setData(
-            installedAppPkgName, [installedAppName, '0', '00:00', '00:00']);
-        appsTimerInfo[installedAppPkgName] = [
-          installedAppName,
-          '0',
-          '00:00',
-          '00:00'
-        ];
-      } else {
-        appsTimerInfo[installedAppPkgName] =
-            UserPreferences.getData(installedAppName);
+      try{
+        AppLockInfo appLockInfo = await UserPreferences.getAppLockInfo(appPkgName);
+        appLockInfoList.add(appLockInfo);
+      }catch(error){
+        print(error);
+        AppLockInfo appLockInfo = AppLockInfo(
+          appPkgName: appPkgName,
+          appName: appName,
+          startAppMinuteLock: 0,
+          endAppMinuteLock: 0,
+          isActive: false,
+        );
+        UserPreferences.setAppLockInfo(appLockInfo);
+        appLockInfoList.add(appLockInfo);
       }
     }
-    _battery.batteryState.then(_updateBatteryState);
-    _battery.batteryLevel.then(_updateBatteryPercentage);
-  }
-
-  void _updateBatteryState(BatteryState state) {
-    if (_batteryState == state) return;
-    setState(() {
-      _batteryState = state;
-    });
-  }
-
-  void _updateBatteryPercentage(int level) {
-    UserPreferences.setBattery('$level%');
-    setState(() {});
   }
 }
