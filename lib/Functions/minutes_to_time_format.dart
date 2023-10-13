@@ -1,6 +1,7 @@
 abstract class MinutesToTimeFormat{
 
   String mm(int minutes){
+
     return _timeString(minutes%60);
   }
 
@@ -9,8 +10,7 @@ abstract class MinutesToTimeFormat{
   }
 
   String hhmm(int minutes){
-
-    return '${_timeString(minutes%60)}:${_timeString(minutes~/60)}';
+    return '${_timeString(minutes~/60)}:${_timeString(minutes%60)}';
   }
 
   String _timeString(int time){

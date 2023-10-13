@@ -51,30 +51,38 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              '${_timeOfDay.format(context)}\n${dateFormat.format(_dateTime)}',
-              textAlign: TextAlign.center,
-            ),
-            IconButton(
-              iconSize: 50,
-              icon: Icon(Icons.apps),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => AppsScreen(
-                            appLockInfoList: appLockInfoList,
-                          )),
-                );
-              },
-            ),
-          ],
+      body: GestureDetector(
+        onHorizontalDragEnd: (value){
+          //implementare apertura chiamate
+        },
+        onHorizontalDragStart: (value){
+          //impkementare apertura fotocamera
+        },
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                '${_timeOfDay.format(context)}\n${dateFormat.format(_dateTime)}',
+                textAlign: TextAlign.center,
+              ),
+              IconButton(
+                iconSize: 50,
+                icon: Icon(Icons.apps),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AppsScreen(
+                              appLockInfoList: appLockInfoList,
+                            )),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -90,7 +98,6 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
         AppLockInfo appLockInfo = await UserPreferences.getAppLockInfo(appPkgName);
         appLockInfoList.add(appLockInfo);
       }catch(error){
-        print(error);
         AppLockInfo appLockInfo = AppLockInfo(
           appPkgName: appPkgName,
           appName: appName,

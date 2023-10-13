@@ -4,7 +4,7 @@ import 'package:focus_launcher/Classes/app_lock_info.dart';
 import '../Functions/user_preferences.dart';
 
 class LockSetup extends StatefulWidget {
-  LockSetup({super.key, required this.appLockInfo});
+  const LockSetup({super.key, required this.appLockInfo});
   final AppLockInfo appLockInfo;
 
   @override
@@ -23,11 +23,11 @@ class LockSetupState extends State<LockSetup> {
   @override
   void initState() {
     super.initState();
+
     _hourStart = widget.appLockInfo.startAppMinuteLock~/60;
     _minuteStart = widget.appLockInfo.startAppMinuteLock%60;
-    _hourEnd = widget.appLockInfo.endAppMinuteLock%60;
+    _hourEnd = widget.appLockInfo.endAppMinuteLock~/60;
     _minuteEnd = widget.appLockInfo.endAppMinuteLock%60;
-
     _isActive = widget.appLockInfo.isActive;
     _hours = List.generate(
         24,

@@ -41,22 +41,20 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: TextField(
-            autofocus: true,
-            controller: _searchController,
-            onChanged: (String filter) {
-              setState(() {
-                _appLockInfoFilteredList =
-                    filterAppTimerInfo(filter, _appLockInfoList);
-              });
-            },
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Search...',
-            ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: TextField(
+          autofocus: true,
+          controller: _searchController,
+          onChanged: (String filter) {
+            setState(() {
+              _appLockInfoFilteredList =
+                  filterAppTimerInfo(filter, _appLockInfoList);
+            });
+          },
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: 'Search...',
           ),
         ),
       ),
@@ -68,7 +66,13 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
             AppLockInfo appLockInfo = _appLockInfoFilteredList[index];
             int currentTime = TimeOfDay.now().hour*60 + TimeOfDay.now().minute;
             return GestureDetector(
-              onTap: () => appLockCheck(appLockInfo, currentTime),
+              //onTap: () => appLockCheck(appLockInfo, currentTime),
+              onTap: (){
+                //Navigator.pop(context);
+                //fare in modo che quando si apre l'app si chiude la pagina delle app
+                //oppure si resetta la tastiera
+                appLockCheck(appLockInfo, currentTime);
+              },
               onLongPress: () =>
                   InstalledApps.openSettings(appLockInfo.appPkgName),
               onDoubleTap: () {
@@ -77,6 +81,9 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
                     builder: (BuildContext context) {
                       return LockSetup(appLockInfo: appLockInfo);
                     });
+                setState(() {
+
+                });
               },
               child: Card(
                 child: ListTile(
@@ -99,7 +106,9 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
       });
     }
     else{
+
       InstalledApps.startApp(appLockInfo.appPkgName);
+      Navigator.pop(context);
     }
   }
 
@@ -110,14 +119,6 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
         appLockInfoListReturn.add(appLockInfo);
       }
     }
-
-    /*
-    for (final key in widget.appsTimerInfo.keys) {
-      List<String> values = widget.appsTimerInfo[key];
-      if (values[0].toString().toLowerCase().contains(val)) {
-        appsTimerInfoFiltered[key] = values;
-      }
-    }*/
     return appLockInfoListReturn;
   }
 
