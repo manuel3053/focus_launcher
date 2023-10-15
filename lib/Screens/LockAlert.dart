@@ -1,5 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
 
 class LockAlert extends StatefulWidget {
@@ -11,10 +9,10 @@ class LockAlert extends StatefulWidget {
   final String end;
 
   @override
-  _LockAlertState createState() => _LockAlertState();
+  LockAlertState createState() => LockAlertState();
 }
 
-class _LockAlertState extends State<LockAlert> {
+class LockAlertState extends State<LockAlert> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(

@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(brightness: Brightness.dark),
       darkTheme: ThemeData(
           brightness: Brightness.dark,
-          textTheme: TextTheme(labelLarge: TextStyle(fontSize: 40))),
+          textTheme: const TextTheme(labelLarge: TextStyle(fontSize: 40))),
       home: const LauncherHomepage(),
     );
   }
@@ -54,13 +54,14 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GestureDetector(
-        /*behavior: HitTestBehavior.translucent,
-        onHorizontalDragEnd: (value) {
-          InstalledApps.startApp(_phonePkgName);
+        onHorizontalDragUpdate: (dragUpdateDetails){
+          if(dragUpdateDetails.delta.dx>0){
+            InstalledApps.startApp(_phonePkgName);
+          }
+          else{
+            InstalledApps.startApp(_cameraPkgName);
+          }
         },
-        onHorizontalDragStart: (value){
-          InstalledApps.startApp(_cameraPkgName);
-        },*/
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -70,19 +71,20 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
               Text(
                 '${_timeOfDay.format(context)}\n${dateFormat.format(_dateTime)}',
                 textAlign: TextAlign.center,
+                textScaleFactor: 3,
               ),
-              IconButton(
-                iconSize: 50,
-                icon: Icon(Icons.apps),
-                onPressed: () {
+              GestureDetector(
+                onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => AppsScreen(
-                              appLockInfoList: appLockInfoList,
-                            )),
+                          appLockInfoList: appLockInfoList,
+                        )),
                   );
                 },
+                onLongPress: init,
+                child: const Icon(Icons.apps, size: 50,),
               ),
             ],
           ),
@@ -94,6 +96,7 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
   init() async {
     List<AppInfo> installedApps = await InstalledApps.getInstalledApps(true, true);
     for (int i = 0; i < installedApps.length; i++) {
+
       String appPkgName = installedApps[i].packageName.toString();
       if(appPkgName.contains('camera')){
         _cameraPkgName = appPkgName;
@@ -102,21 +105,21 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
         _phonePkgName = appPkgName;
       }
       String appName = installedApps[i].name.toString();
-      try{
-        AppLockInfo appLockInfo = await UserPreferences.getAppLockInfo(appPkgName);
+
+      AppLockInfo appLockInfo = await UserPreferences.getAppLockInfo(appPkgName);
+      if(appLockInfo.appName!='null'){
         appLockInfoList.add(appLockInfo);
-      }catch(error){
-        AppLockInfo appLockInfo = AppLockInfo(
+      }
+      else{
+        appLockInfo = AppLockInfo(
           appPkgName: appPkgName,
           appName: appName,
           startAppMinuteLock: 0,
           endAppMinuteLock: 0,
           isActive: false,
         );
-        UserPreferences.setAppLockInfo(appLockInfo);
         appLockInfoList.add(appLockInfo);
       }
     }
-    print(appLockInfoList[0].appName);
   }
 }

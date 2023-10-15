@@ -19,33 +19,7 @@ class LockSetupState extends State<LockSetup> {
   int _hourEnd = 0;
   int _minuteEnd = 0;
   bool _isActive = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _hourStart = widget.appLockInfo.startAppMinuteLock~/60;
-    _minuteStart = widget.appLockInfo.startAppMinuteLock%60;
-    _hourEnd = widget.appLockInfo.endAppMinuteLock~/60;
-    _minuteEnd = widget.appLockInfo.endAppMinuteLock%60;
-    _isActive = widget.appLockInfo.isActive;
-    _hours = List.generate(
-        24,
-        (index) => DropdownMenuItem(
-              value: index,
-              child:
-                  Text(index < 10 ? '0${index.toString()}' : index.toString()),
-            ));
-    _minutes = List.generate(
-        60,
-        (index) => DropdownMenuItem(
-              value: index,
-              child:
-                  Text(index < 10 ? '0${index.toString()}' : index.toString()),
-            ));
-  }
-
-
+  List<Widget> lockForm = [];
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +35,6 @@ class LockSetupState extends State<LockSetup> {
               widget.appLockInfo.startAppMinuteLock = _hourStart * 60 + _minuteStart;
               widget.appLockInfo.endAppMinuteLock = _hourEnd * 60 + _minuteEnd;
               UserPreferences.setAppLockInfo(widget.appLockInfo);
-              setState(() {});
               Navigator.pop(context);
             },
             child: const Text('Save')),
@@ -129,6 +102,31 @@ class LockSetupState extends State<LockSetup> {
         ],
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _hourStart = widget.appLockInfo.startAppMinuteLock~/60;
+    _minuteStart = widget.appLockInfo.startAppMinuteLock%60;
+    _hourEnd = widget.appLockInfo.endAppMinuteLock~/60;
+    _minuteEnd = widget.appLockInfo.endAppMinuteLock%60;
+    _isActive = widget.appLockInfo.isActive;
+    _hours = List.generate(
+        24,
+            (index) => DropdownMenuItem(
+          value: index,
+          child:
+          Text(index < 10 ? '0${index.toString()}' : index.toString()),
+        ));
+    _minutes = List.generate(
+        60,
+            (index) => DropdownMenuItem(
+          value: index,
+          child:
+          Text(index < 10 ? '0${index.toString()}' : index.toString()),
+        ));
   }
 }
 

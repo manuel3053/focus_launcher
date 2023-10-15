@@ -1,5 +1,4 @@
 import 'package:focus_launcher/Classes/app_lock_info.dart';
-import 'package:focus_launcher/Functions/user_preferences.dart';
 import 'package:focus_launcher/Screens/LockAlert.dart';
 import 'package:focus_launcher/Screens/LockSetup.dart';
 import 'package:installed_apps/installed_apps.dart';
@@ -8,8 +7,8 @@ import 'package:flutter/material.dart';
 import '../Functions/minutes_to_time_format.dart';
 
 class AppsScreen extends StatefulWidget {
-  List<AppLockInfo> appLockInfoList;
-  AppsScreen({super.key, required this.appLockInfoList});
+  final List<AppLockInfo> appLockInfoList;
+  const AppsScreen({super.key, required this.appLockInfoList});
   @override
   State<AppsScreen> createState() => _AppsScreenState();
 }
@@ -18,6 +17,7 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
   late TextEditingController _searchController;
   late List<AppLockInfo> _appLockInfoList = [];
   List<AppLockInfo> _appLockInfoFilteredList = [];
+  bool isReverse = false;
 
   DateTime? start;
   DateTime? end;
@@ -27,6 +27,7 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
     _appLockInfoList = widget.appLockInfoList;
     _appLockInfoFilteredList = _appLockInfoList;
     _searchController = TextEditingController();
+
     super.initState();
   }
 
@@ -42,11 +43,13 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
       bottomSheet: Padding(
         padding: const EdgeInsets.only(left: 8, right: 8),
         child: TextField(
+          autofocus: true,
           controller: _searchController,
           onChanged: (String filter) {
             setState(() {
               _appLockInfoFilteredList =
                   filterAppTimerInfo(filter, _appLockInfoList);
+              isReverse = filter.isEmpty ? false : true;
             });
           },
           decoration: const InputDecoration(
@@ -58,12 +61,16 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
       body: GestureDetector(
         onHorizontalDragEnd: (e) => Navigator.pop(context),
         child: ListView.builder(
+          reverse: isReverse,
           itemCount: _appLockInfoFilteredList.length,
           itemBuilder: (context, index) {
             AppLockInfo appLockInfo = _appLockInfoFilteredList[index];
             int currentTime = TimeOfDay.now().hour*60 + TimeOfDay.now().minute;
             return GestureDetector(
-              onTap: () => appLockCheck(appLockInfo, currentTime),
+              onTap: () {
+                appLockInfo.setEndLock(currentTime + 15);
+                appLockCheck(appLockInfo, currentTime);
+              },
               onLongPress: () => InstalledApps.openSettings(appLockInfo.appPkgName),
               onDoubleTap: () {
                 showDialog(
@@ -71,9 +78,6 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
                     builder: (BuildContext context) {
                       return LockSetup(appLockInfo: appLockInfo);
                     });
-                setState(() {
-
-                });
               },
               child: Card(
                 child: ListTile(
@@ -89,13 +93,14 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
   }
 
   void appLockCheck(AppLockInfo appLockInfo, int currentTime){
-    if(currentTime>=appLockInfo.startAppMinuteLock && currentTime<=appLockInfo.endAppMinuteLock){
-      String endLock = hhmm(appLockInfo.endAppMinuteLock);
+    if(currentTime<=appLockInfo.getEndLock() && appLockInfo.isActive){
+      String endLock = hhmm(appLockInfo.getEndLock());
       showDialog(context: context, builder: (BuildContext buildContext){
         return LockAlert(end: endLock);
       });
     }
     else{
+      appLockInfo.resetEndLock();
       InstalledApps.startApp(appLockInfo.appPkgName);
       Navigator.pop(context);
     }
