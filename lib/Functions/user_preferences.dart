@@ -4,9 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class UserPreferences {
   static SharedPreferences? _preferences;
 
-  static Future init() async =>
-      _preferences = await SharedPreferences.getInstance();
-
+  static Future init() async => _preferences = await SharedPreferences.getInstance();
+  static clearUserPreferences () => _preferences?.clear();
   static Future setAppLockInfo(AppLockInfo appLockInfo) async {
     await _preferences!
         .setString('${appLockInfo.appPkgName} appName', appLockInfo.appName);

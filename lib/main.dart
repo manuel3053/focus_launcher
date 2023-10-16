@@ -37,10 +37,6 @@ class LauncherHomepage extends StatefulWidget {
 
 class _LauncherHomepageState extends State<LauncherHomepage> {
   late List<AppLockInfo> appLockInfoList = [];
-
-  final DateTime _dateTime = DateTime.now();
-  final TimeOfDay _timeOfDay = TimeOfDay.now();
-  final DateFormat dateFormat = DateFormat("dd/MM/yyyy");
   String _phonePkgName = '';
   String _cameraPkgName = '';
 
@@ -68,10 +64,11 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                '${_timeOfDay.format(context)}\n${dateFormat.format(_dateTime)}',
-                textAlign: TextAlign.center,
-                textScaleFactor: 3,
+              StreamBuilder(
+                stream: Stream.periodic(const Duration(seconds: 1)),
+                builder: (context, snapshot) {
+                  return Text(DateFormat('MM/dd/yyyy\nhh:mm:ss').format(DateTime.now()),textScaleFactor: 3, textAlign: TextAlign.center,);
+                },
               ),
               GestureDetector(
                 onTap: () {
@@ -83,7 +80,13 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
                         )),
                   );
                 },
-                onLongPress: init,
+                onLongPress: () {
+                  appLockInfoList.clear();
+                  init();
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Completed"),
+                  ));
+                },
                 child: const Icon(Icons.apps, size: 50,),
               ),
             ],
@@ -96,7 +99,6 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
   init() async {
     List<AppInfo> installedApps = await InstalledApps.getInstalledApps(true, true);
     for (int i = 0; i < installedApps.length; i++) {
-
       String appPkgName = installedApps[i].packageName.toString();
       if(appPkgName.contains('camera')){
         _cameraPkgName = appPkgName;
@@ -105,7 +107,6 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
         _phonePkgName = appPkgName;
       }
       String appName = installedApps[i].name.toString();
-
       AppLockInfo appLockInfo = await UserPreferences.getAppLockInfo(appPkgName);
       if(appLockInfo.appName!='null'){
         appLockInfoList.add(appLockInfo);
