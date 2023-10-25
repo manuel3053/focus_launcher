@@ -4,31 +4,29 @@ import 'package:focus_launcher/Screens/LockAlert.dart';
 import 'package:focus_launcher/Screens/LockSetup.dart';
 import 'package:installed_apps/installed_apps.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../Functions/minutes_to_time_format.dart';
+import '../Provider/app_provider.dart';
 
 class AppsScreen extends StatefulWidget {
-  final List<AppLockInfo> appLockInfoList;
-  const AppsScreen({super.key, required this.appLockInfoList});
+  //final List<AppLockInfo> appLockInfoList;
+  const AppsScreen({super.key, /*required this.appLockInfoList*/});
   @override
   State<AppsScreen> createState() => _AppsScreenState();
 }
 
 class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
   late TextEditingController _searchController;
-  late List<AppLockInfo> _appLockInfoList = [];
+  List<AppLockInfo> _appLockInfoList = [];
   List<AppLockInfo> _appLockInfoFilteredList = [];
-  bool isReverse = false;
-
-  DateTime? start;
-  DateTime? end;
+  bool _isReverse = false;
 
   @override
   void initState() {
-    _appLockInfoList = widget.appLockInfoList;
+    _appLockInfoList = Provider.of<AppLockInfoProvider>(context, listen: false).appLockInfoList;
     _appLockInfoFilteredList = _appLockInfoList;
     _searchController = TextEditingController();
-
     super.initState();
   }
 
@@ -49,20 +47,15 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
           onChanged: (String filter) {
             setState(() {
               _appLockInfoFilteredList = filterAppTimerInfo(filter, _appLockInfoList);
-              AppLockInfo appLockInfoFiller = AppLockInfo(
-                  appName: 'no results',
-                  appPkgName: 'no results',
-                  startAppMinuteLock: 0,
-                  endAppMinuteLock: 0,
-                  isActive: false);
+              AppLockInfo appLockInfoFiller = AppLockInfoManager.generateEmpty();
               if(filter.isEmpty){
-                isReverse = false;
+                _isReverse = false;
                 if(_appLockInfoFilteredList.contains(appLockInfoFiller)){
                   _appLockInfoFilteredList.remove(appLockInfoFiller);
                 }
               }
               else{
-                isReverse = true;
+                _isReverse = true;
                 if(!_appLockInfoFilteredList.contains(appLockInfoFiller)){
                   _appLockInfoFilteredList.insert(0,appLockInfoFiller);
                 }
@@ -78,7 +71,7 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
       body: GestureDetector(
         onHorizontalDragEnd: (e) => Navigator.pop(context),
         child: ListView.builder(
-          reverse: isReverse,
+          reverse: _isReverse,
           itemCount: _appLockInfoFilteredList.length,
           itemBuilder: (context, index) {
             AppLockInfo appLockInfo = _appLockInfoFilteredList[index];
@@ -98,12 +91,16 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
                         return LockSetup(appLockInfo: appLockInfo);
                       });
                 },
-                child: Card(
-                  child: ListTile(
-                    trailing: appLockInfo.isActive
-                        ? const Icon(Icons.access_time)
-                        : null,
-                    title: Text(appLockInfo.appName),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8),
+                  child: Card(
+                    elevation: 5,
+                    child: ListTile(
+                      trailing: appLockInfo.isActive
+                          ? const Icon(Icons.access_time)
+                          : null,
+                      title: Text(appLockInfo.appName),
+                    ),
                   ),
                 ));
           },
@@ -127,8 +124,7 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
     }
   }
 
-  List<AppLockInfo> filterAppTimerInfo(
-      String filter, List<AppLockInfo> appLockInfoList) {
+  List<AppLockInfo> filterAppTimerInfo(String filter, List<AppLockInfo> appLockInfoList) {
     List<AppLockInfo> appLockInfoListReturn = [];
     for (AppLockInfo appLockInfo in appLockInfoList) {
       if ((appLockInfo.appName.toLowerCase()).startsWith(filter)) {

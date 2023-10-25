@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:focus_launcher/Classes/app_lock_info.dart';
+import 'package:focus_launcher/Provider/app_provider.dart';
+import 'package:provider/provider.dart';
 
 import '../Functions/user_preferences.dart';
 
@@ -14,6 +16,7 @@ class LockSetup extends StatefulWidget {
 class LockSetupState extends State<LockSetup> {
   late List<DropdownMenuItem> _hours = [];
   late List<DropdownMenuItem> _minutes = [];
+  late AppLockInfo _appLockInfo;
   int _hourStart = 0;
   int _minuteStart = 0;
   int _hourEnd = 0;
@@ -31,10 +34,10 @@ class LockSetupState extends State<LockSetup> {
             child: const Text('Discard')),
         TextButton(
             onPressed: () {
-              widget.appLockInfo.isActive = _isActive;
-              widget.appLockInfo.startAppMinuteLock = _hourStart * 60 + _minuteStart;
-              widget.appLockInfo.endAppMinuteLock = _hourEnd * 60 + _minuteEnd;
-              UserPreferences.setAppLockInfo(widget.appLockInfo);
+              _appLockInfo.isActive = _isActive;
+              _appLockInfo.startAppMinuteLock = _hourStart * 60 + _minuteStart;
+              _appLockInfo.endAppMinuteLock = _hourEnd * 60 + _minuteEnd;
+              context.read<AppLockInfoProvider>().updateAppLock(_appLockInfo);
               Navigator.pop(context);
             },
             child: const Text('Save')),
@@ -107,12 +110,12 @@ class LockSetupState extends State<LockSetup> {
   @override
   void initState() {
     super.initState();
-
-    _hourStart = widget.appLockInfo.startAppMinuteLock~/60;
-    _minuteStart = widget.appLockInfo.startAppMinuteLock%60;
-    _hourEnd = widget.appLockInfo.endAppMinuteLock~/60;
-    _minuteEnd = widget.appLockInfo.endAppMinuteLock%60;
-    _isActive = widget.appLockInfo.isActive;
+    _appLockInfo = widget.appLockInfo;
+    _hourStart = _appLockInfo.startAppMinuteLock~/60;
+    _minuteStart = _appLockInfo.startAppMinuteLock%60;
+    _hourEnd = _appLockInfo.endAppMinuteLock~/60;
+    _minuteEnd = _appLockInfo.endAppMinuteLock%60;
+    _isActive = _appLockInfo.isActive;
     _hours = List.generate(
         24,
             (index) => DropdownMenuItem(

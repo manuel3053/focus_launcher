@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:focus_launcher/Classes/app_lock_info.dart';
 import 'package:focus_launcher/Functions/user_preferences.dart';
-import 'package:installed_apps/app_info.dart';
+import 'package:focus_launcher/Provider/app_provider.dart';
 import 'package:installed_apps/installed_apps.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'Screens/Apps.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await UserPreferences.init();
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider<AppLockInfoProvider>(
+    child: const MyApp(),
+    create: (context) => AppLockInfoProvider(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -36,26 +39,24 @@ class LauncherHomepage extends StatefulWidget {
 }
 
 class _LauncherHomepageState extends State<LauncherHomepage> {
-  late List<AppLockInfo> appLockInfoList = [];
-  String _phonePkgName = '';
-  String _cameraPkgName = '';
 
   @override
   void initState() {
-    init();
     super.initState();
+    Provider.of<AppLockInfoProvider>(context, listen: false).generateAppLockInfoList();
   }
 
   @override
   Widget build(BuildContext context) {
+    String phone = Provider.of<AppLockInfoProvider>(context, listen: false).getPhone;
+    String camera = Provider.of<AppLockInfoProvider>(context, listen: false).getCamera;
     return Scaffold(
       body: GestureDetector(
-        onHorizontalDragUpdate: (dragUpdateDetails){
-          if(dragUpdateDetails.delta.dx>0){
-            InstalledApps.startApp(_phonePkgName);
-          }
-          else{
-            InstalledApps.startApp(_cameraPkgName);
+        onHorizontalDragUpdate: (dragUpdateDetails) {
+          if (dragUpdateDetails.delta.dx > 0) {
+            InstalledApps.startApp(phone);
+          } else {
+            InstalledApps.startApp(camera);
           }
         },
         child: Center(
@@ -64,63 +65,49 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              StreamBuilder(
-                stream: Stream.periodic(const Duration(seconds: 1)),
-                builder: (context, snapshot) {
-                  return Text(DateFormat('MM/dd/yyyy\nhh:mm:ss').format(DateTime.now()),textScaleFactor: 3, textAlign: TextAlign.center,);
-                },
+              Card(
+                elevation: 10,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: StreamBuilder(
+                    stream: Stream.periodic(const Duration(seconds: 1)),
+                    builder: (context, snapshot) {
+                      return Text(
+                        DateFormat('MM/dd/yyyy\nHH:mm:ss').format(DateTime.now()),
+                        textScaleFactor: 3,
+                        textAlign: TextAlign.center,
+                      );
+                    },
+                  ),
+                ),
               ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AppsScreen(
-                          appLockInfoList: appLockInfoList,
-                        )),
-                  );
-                },
-                onLongPress: () {
-                  appLockInfoList.clear();
-                  init();
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text("Completed"),
-                  ));
-                },
-                child: const Icon(Icons.apps, size: 50,),
+              Card(
+                elevation: 10,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AppsScreen(),
+                    ));
+                  },
+                  child: const Icon(
+                    Icons.apps,
+                    size: 50,
+                  ),
+                  onLongPress: (){
+                    Provider.of<AppLockInfoProvider>(context, listen: false).generateAppLockInfoList();
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text("Completed"),
+                    ));
+                  },
+                ),
               ),
+              
             ],
           ),
         ),
       ),
     );
-  }
-
-  init() async {
-    List<AppInfo> installedApps = await InstalledApps.getInstalledApps(true, true);
-    for (int i = 0; i < installedApps.length; i++) {
-      String appPkgName = installedApps[i].packageName.toString();
-      if(appPkgName.contains('camera')){
-        _cameraPkgName = appPkgName;
-      }
-      if(appPkgName.contains('dialer')){
-        _phonePkgName = appPkgName;
-      }
-      String appName = installedApps[i].name.toString();
-      AppLockInfo appLockInfo = await UserPreferences.getAppLockInfo(appPkgName);
-      if(appLockInfo.appName!='null'){
-        appLockInfoList.add(appLockInfo);
-      }
-      else{
-        appLockInfo = AppLockInfo(
-          appPkgName: appPkgName,
-          appName: appName,
-          startAppMinuteLock: 0,
-          endAppMinuteLock: 0,
-          isActive: false,
-        );
-        appLockInfoList.add(appLockInfo);
-      }
-    }
   }
 }
