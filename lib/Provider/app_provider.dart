@@ -12,6 +12,7 @@ class AppLockInfoProvider with ChangeNotifier, AppLockInfoManager {
 
   generateAppLockInfoList() async {
     List<AppInfo> installedApps = await InstalledApps.getInstalledApps(true, true);
+    _appLockInfoList.clear();
     for (AppInfo app in installedApps) {
       String appPkgName = app.packageName.toString();
       if (appPkgName.contains('camera')) {
@@ -36,14 +37,17 @@ class AppLockInfoProvider with ChangeNotifier, AppLockInfoManager {
   //set setCamera(String pkg) => _camera = pkg;
   List<AppLockInfo> get appLockInfoList => _appLockInfoList;
 
-  updateAppLock(AppLockInfo appLockInfo) {
-    for (AppLockInfo appLockInfoTmp in appLockInfoList) {
-      if (appLockInfoTmp.appPkgName == appLockInfo.appPkgName) {
-        _appLockInfoList.remove(appLockInfoTmp);
-        _appLockInfoList.add(appLockInfo);
+  updateAppLock(String appPkgName, bool isActive, int startAppMinuteLock, int endAppMinuteLock) {
+    int i=0;
+    for (AppLockInfo appLockInfo in appLockInfoList) {
+      if (appLockInfo.appPkgName == appPkgName) {
+        _appLockInfoList[i].startAppMinuteLock = startAppMinuteLock;
+        _appLockInfoList[i].endAppMinuteLock = endAppMinuteLock;
+        _appLockInfoList[i].isActive = isActive;
         UserPreferences.setAppLockInfo(appLockInfo);
         notifyListeners();
       }
+      i++;
     }
   }
 

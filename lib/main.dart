@@ -51,21 +51,22 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
     String phone = Provider.of<AppLockInfoProvider>(context, listen: false).getPhone;
     String camera = Provider.of<AppLockInfoProvider>(context, listen: false).getCamera;
     return Scaffold(
-      body: GestureDetector(
-        onHorizontalDragUpdate: (dragUpdateDetails) {
-          if (dragUpdateDetails.delta.dx > 0) {
-            InstalledApps.startApp(phone);
-          } else {
-            InstalledApps.startApp(camera);
-          }
-        },
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Card(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onHorizontalDragUpdate: (dragUpdateDetails) {
+                if (dragUpdateDetails.delta.dx > 10) {
+                  InstalledApps.startApp(phone);
+                }
+                if (dragUpdateDetails.delta.dx < -10){
+                  InstalledApps.startApp(camera);
+                }
+              },
+              child: Card(
                 elevation: 10,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -81,31 +82,31 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
                   ),
                 ),
               ),
-              Card(
-                elevation: 10,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AppsScreen(),
-                    ));
-                  },
-                  child: const Icon(
-                    Icons.apps,
-                    size: 50,
-                  ),
-                  onLongPress: (){
-                    Provider.of<AppLockInfoProvider>(context, listen: false).generateAppLockInfoList();
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text("Completed"),
-                    ));
-                  },
+            ),
+            Card(
+              elevation: 10,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AppsScreen(),
+                  ));
+                },
+                child: const Icon(
+                  Icons.apps,
+                  size: 50,
                 ),
+                onLongPress: (){
+                  Provider.of<AppLockInfoProvider>(context, listen: false).generateAppLockInfoList();
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Completed"),
+                  ));
+                },
               ),
-              
-            ],
-          ),
+            ),
+
+          ],
         ),
       ),
     );

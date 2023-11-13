@@ -110,12 +110,12 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
   }
 
   void appLockCheck(AppLockInfo appLockInfo, int currentTime) {
-    if (currentTime <= appLockInfo.getEndLock() && appLockInfo.isActive) {
+    if (currentTime <= appLockInfo.endAppMinuteLock && currentTime >= appLockInfo.startAppMinuteLock && appLockInfo.isActive) {
       String endLock = hhmm(appLockInfo.getEndLock());
       showDialog(
           context: context,
           builder: (BuildContext buildContext) {
-            return LockAlert(end: endLock);
+            return LockAlert(end: appLockInfo.endAppMinuteLock);
           });
     } else {
       appLockInfo.resetEndLock();

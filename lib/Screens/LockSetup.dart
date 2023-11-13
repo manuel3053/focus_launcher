@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:focus_launcher/Classes/app_lock_info.dart';
-import 'package:focus_launcher/Provider/app_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../Functions/user_preferences.dart';
+import '../Provider/app_provider.dart';
 
 class LockSetup extends StatefulWidget {
   const LockSetup({super.key, required this.appLockInfo});
@@ -34,10 +33,10 @@ class LockSetupState extends State<LockSetup> {
             child: const Text('Discard')),
         TextButton(
             onPressed: () {
-              _appLockInfo.isActive = _isActive;
+              /*_appLockInfo.isActive = _isActive;
               _appLockInfo.startAppMinuteLock = _hourStart * 60 + _minuteStart;
-              _appLockInfo.endAppMinuteLock = _hourEnd * 60 + _minuteEnd;
-              context.read<AppLockInfoProvider>().updateAppLock(_appLockInfo);
+              _appLockInfo.endAppMinuteLock = _hourEnd * 60 + _minuteEnd;*/
+              context.read<AppLockInfoProvider>().updateAppLock(_appLockInfo.appPkgName, _isActive, _hourStart * 60 + _minuteStart, _hourEnd * 60 + _minuteEnd);
               Navigator.pop(context);
             },
             child: const Text('Save')),
