@@ -1,45 +1,136 @@
-import 'package:device_apps/device_apps.dart';
+import 'package:flutter/gestures.dart';
+import 'package:focus_launcher/Classes/app_lock_info.dart';
+import 'package:focus_launcher/Screens/LockAlert.dart';
+import 'package:focus_launcher/Screens/LockSetup.dart';
+import 'package:installed_apps/installed_apps.dart';
 import 'package:flutter/material.dart';
-import 'package:focus_launcher/Services/alphabet_scroll_page.dart';
+import 'package:provider/provider.dart';
 
-class Apps extends StatefulWidget {
-  const Apps({required Key key}):super(key: key);
+import '../Functions/minutes_to_time_format.dart';
+import '../Provider/app_provider.dart';
+
+class AppsScreen extends StatefulWidget {
+  //final List<AppLockInfo> appLockInfoList;
+  const AppsScreen({super.key, /*required this.appLockInfoList*/});
   @override
-  State<Apps> createState() => _AppsState();
+  State<AppsScreen> createState() => _AppsScreenState();
 }
-class _AppsState extends State<Apps> {
+
+class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
+  late TextEditingController _searchController;
+  List<AppLockInfo> _appLockInfoList = [];
+  List<AppLockInfo> _appLockInfoFilteredList = [];
+  bool _isReverse = false;
+
+  @override
+  void initState() {
+    _appLockInfoList = Provider.of<AppLockInfoProvider>(context, listen: false).appLockInfoList;
+    _appLockInfoFilteredList = _appLockInfoList;
+    _searchController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-
-    return FutureBuilder<List<Application>>(
-        future: DeviceApps.getInstalledApplications(
-          includeAppIcons: false,
-          includeSystemApps: true,
-          onlyAppsWithLaunchIntent: false),
-        builder: (BuildContext context, AsyncSnapshot<List<Application>> data) {
-          if (data.data == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          else {
-            List<Application> apps = data.data!;
-            List<String> appsName = [];
-
-            for (var app in apps) {
-              if(!app.systemApp) {
-                appsName.add(app.appName);
+    return Scaffold(
+      bottomSheet: Padding(
+        padding: const EdgeInsets.only(left: 8, right: 8),
+        child: TextField(
+          autofocus: true,
+          controller: _searchController,
+          onChanged: (String filter) {
+            setState(() {
+              _appLockInfoFilteredList = filterAppTimerInfo(filter, _appLockInfoList);
+              AppLockInfo appLockInfoFiller = AppLockInfoManager.generateEmpty();
+              if(filter.isEmpty){
+                _isReverse = false;
+                if(_appLockInfoFilteredList.contains(appLockInfoFiller)){
+                  _appLockInfoFilteredList.remove(appLockInfoFiller);
+                }
               }
-            }
+              else{
+                _isReverse = true;
+                if(!_appLockInfoFilteredList.contains(appLockInfoFiller)){
+                  _appLockInfoFilteredList.insert(0,appLockInfoFiller);
+                }
+              }
+            });
+          },
+          decoration: const InputDecoration(
+            border: InputBorder.none,
+            labelText: 'Search...',
+          ),
+        ),
+      ),
+      body: GestureDetector(
+        onHorizontalDragEnd: (e) => Navigator.pop(context),
+        child: ListView.builder(
+          reverse: _isReverse,
+          itemCount: _appLockInfoFilteredList.length,
+          itemBuilder: (context, index) {
+            AppLockInfo appLockInfo = _appLockInfoFilteredList[index];
+            return GestureDetector(
+                onTap: () {
+                  int currentTime =
+                      TimeOfDay.now().hour * 60 + TimeOfDay.now().minute;
+                  appLockInfo.setEndLock(currentTime + 15);
+                  appLockCheck(appLockInfo, currentTime);
+                },
+                onLongPress: () =>
+                    InstalledApps.openSettings(appLockInfo.appPkgName),
+                onDoubleTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return LockSetup(appLockInfo: appLockInfo);
+                      });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8),
+                  child: Card(
+                    elevation: 5,
+                    child: ListTile(
+                      trailing: appLockInfo.isActive
+                          ? const Icon(Icons.access_time)
+                          : null,
+                      title: Text(appLockInfo.appName),
+                    ),
+                  ),
+                ));
+          },
+        ),
+      ),
+    );
+  }
 
-            return Scaffold(
-              body: AlphabetScrollPage(
-                items: appsName,
-                key: UniqueKey(),
-                onClickedItem: (String value) {},
-              ),
-            );
-
-          }
-        }
-      );
+  void appLockCheck(AppLockInfo appLockInfo, int currentTime) {
+    if (currentTime <= appLockInfo.endAppMinuteLock && currentTime >= appLockInfo.startAppMinuteLock && appLockInfo.isActive) {
+      String endLock = hhmm(appLockInfo.getEndLock());
+      showDialog(
+          context: context,
+          builder: (BuildContext buildContext) {
+            return LockAlert(end: appLockInfo.endAppMinuteLock);
+          });
+    } else {
+      appLockInfo.resetEndLock();
+      InstalledApps.startApp(appLockInfo.appPkgName);
+      Navigator.pop(context);
     }
+  }
+
+  List<AppLockInfo> filterAppTimerInfo(String filter, List<AppLockInfo> appLockInfoList) {
+    List<AppLockInfo> appLockInfoListReturn = [];
+    for (AppLockInfo appLockInfo in appLockInfoList) {
+      if ((appLockInfo.appName.toLowerCase()).startsWith(filter)) {
+        appLockInfoListReturn.add(appLockInfo);
+      }
+    }
+    return appLockInfoListReturn;
+  }
 }
