@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:focus_launcher/Functions/minutes_to_time_format.dart';
 class LockAlert extends StatefulWidget {
   const LockAlert({
-    Key? key,
+    super.key,
     required this.end,
-  }) : super(key: key);
+  });
 
   final int end;
 

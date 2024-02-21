@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:focus_launcher/Classes/app_lock_info.dart';
 import 'package:focus_launcher/Screens/LockAlert.dart';
 import 'package:focus_launcher/Screens/LockSetup.dart';
