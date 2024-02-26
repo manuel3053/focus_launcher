@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "com.example.sus"
+    namespace "com.example.focus_launcher"
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 

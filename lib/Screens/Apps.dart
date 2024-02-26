@@ -9,8 +9,7 @@ import '../Functions/minutes_to_time_format.dart';
 import '../Provider/app_provider.dart';
 
 class AppsScreen extends StatefulWidget {
-  //final List<AppLockInfo> appLockInfoList;
-  const AppsScreen({super.key, /*required this.appLockInfoList*/});
+  const AppsScreen({super.key});
   @override
   State<AppsScreen> createState() => _AppsScreenState();
 }
@@ -18,13 +17,13 @@ class AppsScreen extends StatefulWidget {
 class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
   late TextEditingController _searchController;
   List<AppLockInfo> _appLockInfoList = [];
-  List<AppLockInfo> _appLockInfoFilteredList = [];
   bool _isReverse = false;
+  int counter = 0;
 
   @override
   void initState() {
     _appLockInfoList = Provider.of<AppLockInfoProvider>(context, listen: false).appLockInfoList;
-    _appLockInfoFilteredList = _appLockInfoList;
+    counter = _appLockInfoList.length;
     _searchController = TextEditingController();
     super.initState();
   }
@@ -38,43 +37,35 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomSheet: Padding(
-        padding: const EdgeInsets.only(left: 8, right: 8),
-        child: TextField(
-          autofocus: true,
-          controller: _searchController,
-          onChanged: (String filter) {
-            setState(() {
-              _appLockInfoFilteredList = filterAppTimerInfo(filter, _appLockInfoList);
-              AppLockInfo appLockInfoFiller = AppLockInfoManager.generateEmpty();
-              if(filter.isEmpty){
-                _isReverse = false;
-                if(_appLockInfoFilteredList.contains(appLockInfoFiller)){
-                  _appLockInfoFilteredList.remove(appLockInfoFiller);
-                }
-              }
-              else{
-                _isReverse = true;
-                if(!_appLockInfoFilteredList.contains(appLockInfoFiller)){
-                  _appLockInfoFilteredList.insert(0,appLockInfoFiller);
-                }
-              }
-            });
-          },
-          decoration: const InputDecoration(
-            border: InputBorder.none,
-            labelText: 'Search...',
-          ),
+      bottomSheet: TextField(
+        autofocus: true,
+        controller: _searchController,
+        onChanged: (String filter) {
+          setState(() {
+            _appLockInfoList = filterAppTimerInfo(filter, _appLockInfoList);
+            if(filter.isEmpty) {
+              _isReverse = false;
+            }
+            else{
+              _isReverse = true;
+            }
+          }
+          );
+        },
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          labelText: 'Search...',
         ),
       ),
       body: GestureDetector(
         onHorizontalDragEnd: (e) => Navigator.pop(context),
         child: ListView.builder(
+          padding: EdgeInsets.only(bottom: 70), //TODO: trovare una soluzione migliore del padding
           reverse: _isReverse,
-          itemCount: _appLockInfoFilteredList.length,
+          itemCount: counter,
           itemBuilder: (context, index) {
-            AppLockInfo appLockInfo = _appLockInfoFilteredList[index];
-            return GestureDetector(
+            AppLockInfo appLockInfo= _appLockInfoList[index];
+            return appLockInfo.isVisible==true ? GestureDetector(
                 onTap: () {
                   int currentTime =
                       TimeOfDay.now().hour * 60 + TimeOfDay.now().minute;
@@ -95,13 +86,13 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
                   child: Card(
                     elevation: 5,
                     child: ListTile(
-                      trailing: appLockInfo.isActive
+                      trailing: appLockInfo.isLocked
                           ? const Icon(Icons.access_time)
                           : null,
                       title: Text(appLockInfo.appName),
                     ),
                   ),
-                ));
+                )): const Divider(height: 0,);
           },
         ),
       ),
@@ -109,7 +100,7 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
   }
 
   void appLockCheck(AppLockInfo appLockInfo, int currentTime) {
-    if (currentTime <= appLockInfo.endAppMinuteLock && currentTime >= appLockInfo.startAppMinuteLock && appLockInfo.isActive) {
+    if (currentTime <= appLockInfo.endAppMinuteLock && currentTime >= appLockInfo.startAppMinuteLock && appLockInfo.isLocked) {
       String endLock = hhmm(appLockInfo.getEndLock());
       showDialog(
           context: context,
@@ -123,13 +114,16 @@ class _AppsScreenState extends State<AppsScreen> with MinutesToTimeFormat {
     }
   }
 
+
   List<AppLockInfo> filterAppTimerInfo(String filter, List<AppLockInfo> appLockInfoList) {
-    List<AppLockInfo> appLockInfoListReturn = [];
-    for (AppLockInfo appLockInfo in appLockInfoList) {
-      if ((appLockInfo.appName.toLowerCase()).startsWith(filter)) {
-        appLockInfoListReturn.add(appLockInfo);
+    for (var element in appLockInfoList) {
+      if (!(element.appName.toLowerCase()).startsWith(filter)) {
+        element.isVisible=false;
+      }
+      else{
+        element.isVisible=true;
       }
     }
-    return appLockInfoListReturn;
+    return appLockInfoList;
   }
 }

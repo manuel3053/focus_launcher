@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:focus_launcher/Functions/user_preferences.dart';
 import 'package:focus_launcher/Provider/app_provider.dart';
-import 'package:installed_apps/installed_apps.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'Screens/Apps.dart';
@@ -48,8 +47,6 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
 
   @override
   Widget build(BuildContext context) {
-    String phone = Provider.of<AppLockInfoProvider>(context, listen: false).getPhone;
-    String camera = Provider.of<AppLockInfoProvider>(context, listen: false).getCamera;
     return Scaffold(
       body: Center(
         child: Column(
@@ -57,29 +54,19 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            GestureDetector(
-              onHorizontalDragUpdate: (dragUpdateDetails) {
-                if (dragUpdateDetails.delta.dx > 10) {
-                  InstalledApps.startApp(phone);
-                }
-                if (dragUpdateDetails.delta.dx < -10){
-                  InstalledApps.startApp(camera);
-                }
-              },
-              child: Card(
-                elevation: 10,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: StreamBuilder(
-                    stream: Stream.periodic(const Duration(seconds: 1)),
-                    builder: (context, snapshot) {
-                      return Text(
-                        DateFormat('MM/dd/yyyy\nHH:mm:ss').format(DateTime.now()),
-                        textScaleFactor: 3,
-                        textAlign: TextAlign.center,
-                      );
-                    },
-                  ),
+            Card(
+              elevation: 10,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: StreamBuilder(
+                  stream: Stream.periodic(const Duration(minutes: 1)),
+                  builder: (context, snapshot) {
+                    return Text(
+                      DateFormat('MM/dd/yyyy\nHH:mm').format(DateTime.now()),
+                      textScaler: const TextScaler.linear(3),
+                      textAlign: TextAlign.center,
+                    );
+                  },
                 ),
               ),
             ),

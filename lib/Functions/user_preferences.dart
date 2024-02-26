@@ -14,7 +14,7 @@ class UserPreferences {
     await _preferences!.setInt('${appLockInfo.appPkgName} endAppMinuteLock',
         appLockInfo.endAppMinuteLock);
     await _preferences!.setInt(
-        '${appLockInfo.appPkgName} isActive', appLockInfo.isActive ? 1 : 0);
+        '${appLockInfo.appPkgName} isLocked', appLockInfo.isLocked ? 1 : 0);
   }
 
   static Future getAppLockInfo(String appPkgName) async {
@@ -25,7 +25,7 @@ class UserPreferences {
             _preferences!.getInt('$appPkgName startAppMinuteLock') ?? 0,
         endAppMinuteLock:
             _preferences!.getInt('$appPkgName endAppMinuteLock') ?? 0,
-        isActive:
-            _preferences!.getInt('$appPkgName isActive') == 1 ? true : false);
+        isLocked:
+            _preferences!.getInt('$appPkgName isLocked') == 1 ? true : false, isVisible: true);
   }
 }

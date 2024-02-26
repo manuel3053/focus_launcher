@@ -36,7 +36,11 @@ class LockSetupState extends State<LockSetup> {
               /*_appLockInfo.isActive = _isActive;
               _appLockInfo.startAppMinuteLock = _hourStart * 60 + _minuteStart;
               _appLockInfo.endAppMinuteLock = _hourEnd * 60 + _minuteEnd;*/
-              context.read<AppLockInfoProvider>().updateAppLock(_appLockInfo.appPkgName, _isActive, _hourStart * 60 + _minuteStart, _hourEnd * 60 + _minuteEnd);
+              context.read<AppLockInfoProvider>().updateAppLock(
+                  _appLockInfo.appPkgName,
+                  _isActive,
+                  _hourStart * 60 + _minuteStart,
+                  _hourEnd * 60 + _minuteEnd);
               Navigator.pop(context);
             },
             child: const Text('Save')),
@@ -110,26 +114,24 @@ class LockSetupState extends State<LockSetup> {
   void initState() {
     super.initState();
     _appLockInfo = widget.appLockInfo;
-    _hourStart = _appLockInfo.startAppMinuteLock~/60;
-    _minuteStart = _appLockInfo.startAppMinuteLock%60;
-    _hourEnd = _appLockInfo.endAppMinuteLock~/60;
-    _minuteEnd = _appLockInfo.endAppMinuteLock%60;
-    _isActive = _appLockInfo.isActive;
+    _hourStart = _appLockInfo.startAppMinuteLock ~/ 60;
+    _minuteStart = _appLockInfo.startAppMinuteLock % 60;
+    _hourEnd = _appLockInfo.endAppMinuteLock ~/ 60;
+    _minuteEnd = _appLockInfo.endAppMinuteLock % 60;
+    _isActive = _appLockInfo.isLocked;
     _hours = List.generate(
         24,
-            (index) => DropdownMenuItem(
-          value: index,
-          child:
-          Text(index < 10 ? '0${index.toString()}' : index.toString()),
-        ));
+        (index) => DropdownMenuItem(
+              value: index,
+              child:
+                  Text(index < 10 ? '0${index.toString()}' : index.toString()),
+            ));
     _minutes = List.generate(
         60,
-            (index) => DropdownMenuItem(
-          value: index,
-          child:
-          Text(index < 10 ? '0${index.toString()}' : index.toString()),
-        ));
+        (index) => DropdownMenuItem(
+              value: index,
+              child:
+                  Text(index < 10 ? '0${index.toString()}' : index.toString()),
+            ));
   }
 }
-
-

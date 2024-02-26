@@ -3,15 +3,18 @@ class AppLockInfo {
   String appName;
   int startAppMinuteLock;
   int endAppMinuteLock;
-  bool isActive;
+  bool isVisible;
+  bool isLocked;
   int endLock = -1;
 
-  AppLockInfo(
-      {required this.appName,
-      required this.appPkgName,
-      required this.startAppMinuteLock,
-      required this.endAppMinuteLock,
-      required this.isActive});
+  AppLockInfo({
+    required this.appName,
+    required this.appPkgName,
+    required this.startAppMinuteLock,
+    required this.endAppMinuteLock,
+    required this.isVisible,
+    required this.isLocked,
+  });
 
   setEndLock(int minutes) => endLock = minutes;
   int getEndLock() {
@@ -19,7 +22,6 @@ class AppLockInfo {
   }
 
   resetEndLock() => endLock = -1;
-
 }
 
 class AppLockInfoManager {
@@ -29,14 +31,15 @@ class AppLockInfoManager {
         appPkgName: '',
         startAppMinuteLock: 0,
         endAppMinuteLock: 0,
-        isActive: false);
+        isVisible: true, isLocked: false);
   }
+
   static AppLockInfo generateDefault(String appName, String appPkgName) {
     return AppLockInfo(
         appName: appName,
         appPkgName: appPkgName,
         startAppMinuteLock: 0,
         endAppMinuteLock: 0,
-        isActive: false);
+        isVisible: true, isLocked: false);
   }
 }
