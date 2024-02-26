@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 import '../Provider/app_provider.dart';
 import 'apps.dart';
 
@@ -24,9 +22,8 @@ class HomeButton extends StatelessWidget {
           Icons.apps,
           size: 50,
         ),
-        onLongPress: () {
-          Provider.of<AppLockInfoProvider>(context, listen: false)
-              .generateAppLockInfoList();
+        onLongPress: () async {
+          Provider.of<AppLockInfoProvider>(context, listen: false).generateAppLockInfoList();
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Completed"),
           ));

@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:focus_launcher/Classes/app_lock_info.dart';
 import 'package:installed_apps/installed_apps.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-
-import '../Provider/app_provider.dart';
-import 'apps.dart';
 
 class AppsCard extends StatelessWidget{
   final AppLockInfo appLockInfo;
