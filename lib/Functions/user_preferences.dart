@@ -5,27 +5,19 @@ class UserPreferences {
   static SharedPreferences? _preferences;
 
   static Future init() async => _preferences = await SharedPreferences.getInstance();
+
   static clearUserPreferences () => _preferences?.clear();
+
   static Future setAppLockInfo(AppLockInfo appLockInfo) async {
     await _preferences!
-        .setString('${appLockInfo.appPkgName} appName', appLockInfo.appName);
-    await _preferences!.setInt('${appLockInfo.appPkgName} startAppMinuteLock',
-        appLockInfo.startAppMinuteLock);
-    await _preferences!.setInt('${appLockInfo.appPkgName} endAppMinuteLock',
-        appLockInfo.endAppMinuteLock);
-    await _preferences!.setInt(
-        '${appLockInfo.appPkgName} isLocked', appLockInfo.isLocked ? 1 : 0);
+        .setString('${appLockInfo.appPkgName} appPkgName', appLockInfo.appName);
+
   }
 
   static Future getAppLockInfo(String appPkgName) async {
     return AppLockInfo(
-        appName: _preferences!.getString('$appPkgName appName').toString(),
+        appName: _preferences!.getString('$appPkgName appPkgName').toString(),
         appPkgName: appPkgName,
-        startAppMinuteLock:
-            _preferences!.getInt('$appPkgName startAppMinuteLock') ?? 0,
-        endAppMinuteLock:
-            _preferences!.getInt('$appPkgName endAppMinuteLock') ?? 0,
-        isLocked:
-            _preferences!.getInt('$appPkgName isLocked') == 1 ? true : false, isVisible: true);
+  isVisible: true);
   }
 }
