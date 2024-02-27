@@ -6,7 +6,7 @@ import 'package:installed_apps/installed_apps.dart';
 import '../Functions/user_preferences.dart';
 
 //import '../Functions/user_preferences.dart';
-
+/*
 class AppLockInfoProvider with ChangeNotifier, AppLockInfoManager {
   final List<AppLockInfo> _appLockInfoList = [];
 
@@ -24,3 +24,4 @@ class AppLockInfoProvider with ChangeNotifier, AppLockInfoManager {
   }
 
 }
+*/

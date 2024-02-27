@@ -9,10 +9,11 @@ import 'Functions/user_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await UserPreferences.init();
-  runApp(ChangeNotifierProvider<AppLockInfoProvider>(
+  /*runApp(ChangeNotifierProvider<AppLockInfoProvider>(
     child: const MyApp(),
     create: (context) => AppLockInfoProvider(),
-  ));
+  ));*/
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -49,7 +50,7 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            HomeWidget(),
+            //HomeWidget(),
             HomeButton(),
           ],
         ),

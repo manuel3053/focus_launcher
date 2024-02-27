@@ -14,11 +14,11 @@ class _HomeWidgetState extends State<HomeWidget> {
     if (kDebugMode) {
       print('sono stato caricato');
     }
-    return Card(
+    return const Card(
       elevation: 10,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: StreamBuilder(
+        padding: EdgeInsets.all(8.0),
+        /*child: StreamBuilder(
           stream: Stream.periodic(const Duration(minutes: 1)),
           builder: (context, snapshot) {
             return Text(
@@ -27,7 +27,8 @@ class _HomeWidgetState extends State<HomeWidget> {
               textAlign: TextAlign.center,
             );
           },
-        ),
+        ),*/
+        child: Text("testing_only"),
       ),
     );
   }

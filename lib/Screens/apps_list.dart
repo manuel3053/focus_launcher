@@ -20,6 +20,8 @@ class _AppsListState extends State<AppsList>{
     return GestureDetector(
       onHorizontalDragEnd: (e) => Navigator.pop(context),
       child: ListView.builder(
+        //addAutomaticKeepAlives: false,
+        //addRepaintBoundaries: false,
         padding: const EdgeInsets.only(
             bottom: 70,
             top: 40), //TODO: trovare una soluzione migliore del padding
@@ -32,9 +34,7 @@ class _AppsListState extends State<AppsList>{
               ? AppsCard(
             appLockInfo: widget.appLockInfoList![index],
           )
-              : const Divider(
-            height: 0,
-          );
+              : const SizedBox.shrink();
         },
       ),
     );
