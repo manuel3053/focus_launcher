@@ -3,6 +3,8 @@ import 'package:focus_launcher/Functions/user_preferences.dart';
 import 'package:focus_launcher/Screens/apps_list.dart';
 import 'package:flutter/material.dart';
 
+import 'apps_pages.dart';
+
 class AppsScreen extends StatefulWidget {
   const AppsScreen({super.key});
   @override
@@ -41,9 +43,11 @@ class _AppsScreenState extends State<AppsScreen> {
             return Text(snapshot.error.toString());
           }
           return Scaffold(
-            body: AppsList(appLockInfoList: snapshot.data),
+            body: AppsList(appLockInfoList: snapshot.data, isReverse: _isReverse,),
+            //body: AppsPages(appLockInfoList: snapshot.data),
             bottomSheet: TextField(
-              autofocus: true,
+              //Quando la textfield ha il focus continua a far ricaricare il widget
+              //autofocus: true,
               controller: _searchController,
               onChanged: (String filter) {
                 setState(() {

@@ -2,10 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:focus_launcher/Classes/app_lock_info.dart';
 import 'apps_card.dart';
 
-class AppsList extends StatelessWidget {
+class AppsList extends StatefulWidget {
   final List<AppLockInfo>? appLockInfoList;
-  final bool _isReverse = true;
-  const AppsList({super.key, required this.appLockInfoList});
+  final bool isReverse;
+  const AppsList({super.key, required this.appLockInfoList, required this.isReverse});
+
+  @override
+  State<AppsList> createState() => _AppsListState();
+}
+
+class _AppsListState extends State<AppsList>{
+  late ScrollController controller;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -15,19 +23,21 @@ class AppsList extends StatelessWidget {
         padding: const EdgeInsets.only(
             bottom: 70,
             top: 40), //TODO: trovare una soluzione migliore del padding
-        reverse: _isReverse,
-        itemCount: appLockInfoList?.length,
+        reverse: widget.isReverse,
+        itemCount: widget.appLockInfoList?.length,
+        //itemCount: 5,
         itemBuilder: (context, index) {
           //AppLockInfo appLockInfo= _appLockInfoList[index];
-          return appLockInfoList![index].isVisible == true
+          return widget.appLockInfoList![index].isVisible == true
               ? AppsCard(
-                  appLockInfo: appLockInfoList![index],
-                )
+            appLockInfo: widget.appLockInfoList![index],
+          )
               : const Divider(
-                  height: 0,
-                );
+            height: 0,
+          );
         },
       ),
     );
   }
+
 }
