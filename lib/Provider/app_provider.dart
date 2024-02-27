@@ -22,4 +22,5 @@ class AppLockInfoProvider with ChangeNotifier, AppLockInfoManager {
       UserPreferences.setAppLockInfo(appPkgName, appName);
     }
   }
+
 }

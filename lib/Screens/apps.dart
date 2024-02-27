@@ -1,8 +1,8 @@
-
 import 'package:focus_launcher/Classes/app_lock_info.dart';
 import 'package:focus_launcher/Functions/user_preferences.dart';
 import 'package:focus_launcher/Screens/apps_list.dart';
 import 'package:flutter/material.dart';
+
 class AppsScreen extends StatefulWidget {
   const AppsScreen({super.key});
   @override
@@ -32,34 +32,53 @@ class _AppsScreenState extends State<AppsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder(
-        future: _appLockInfoList,
-        builder: (BuildContext context, AsyncSnapshot<List<AppLockInfo>> snapshot) {
-          if(snapshot.connectionState == ConnectionState.done){
-            if(snapshot.hasError){
-              return Text(snapshot.error.toString());
-            }
-            return AppsList(appLockInfoList: snapshot.data);
+    return FutureBuilder(
+      future: _appLockInfoList,
+      builder:
+          (BuildContext context, AsyncSnapshot<List<AppLockInfo>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            return Text(snapshot.error.toString());
           }
-          else{
-            return const CircularProgressIndicator();
-          }
-        },
-      ),
+          return Scaffold(
+            body: AppsList(appLockInfoList: snapshot.data),
+            bottomSheet: TextField(
+              autofocus: true,
+              controller: _searchController,
+              onChanged: (String filter) {
+                setState(() {
+                  filterAppTimerInfo(filter, snapshot.data);
+                }
+                );
+              },
+              decoration: const InputDecoration(
+                contentPadding: EdgeInsets.only(left: 20, top: 10, bottom: 10),
+                border: InputBorder.none,
+                labelText: 'Search...',
+              ),
+            ),
+          );
+        } else {
+          return const CircularProgressIndicator();
+        }
+      },
     );
   }
 
-  List<AppLockInfo> filterAppTimerInfo(String filter, List<AppLockInfo> appLockInfoList) {
-    for (var element in appLockInfoList) {
+  filterAppTimerInfo(String filter, List<AppLockInfo>? appLockInfoList) {
+    for (var element in appLockInfoList!) {
       if (!(element.appName.toLowerCase()).startsWith(filter)) {
-        element.isVisible=false;
-      }
-      else{
-        element.isVisible=true;
+        element.isVisible = false;
+      } else {
+        element.isVisible = true;
       }
     }
-    return appLockInfoList;
+    if(filter.isEmpty) {
+      _isReverse = false;
+    }
+    else{
+      _isReverse = true;
+    }
   }
 }
 

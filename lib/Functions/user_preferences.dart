@@ -24,13 +24,11 @@ class UserPreferences {
     final keys = _preferences?.getKeys();
     final List<AppLockInfo> appLockInfoList = List.empty(growable: true);
     for (String key in keys!) {
-      print('ciao');
       appLockInfoList.add(AppLockInfo(
           appName: _preferences!.getString(key).toString(),
           appPkgName: key,
           isVisible: true));
     }
-    print(appLockInfoList);
     return appLockInfoList;
   }
 }
