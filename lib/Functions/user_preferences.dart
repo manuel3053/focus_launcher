@@ -20,6 +20,10 @@ class UserPreferences {
         isVisible: true);
   }
 
+  static Future removeAppLockInfo(String appPkgName) async {
+    await _preferences?.remove(appPkgName);
+  }
+
   static Future<List<AppLockInfo>> getAppLockInfoList() async {
     final keys = _preferences?.getKeys();
     final List<AppLockInfo> appLockInfoList = List.empty(growable: true);

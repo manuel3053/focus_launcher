@@ -16,12 +16,12 @@ class AppsCard extends StatelessWidget{
         onLongPress: () =>
             InstalledApps.openSettings(appLockInfo.appPkgName),
         child: Padding(
-          padding: const EdgeInsets.only(left: 8, right: 8),
-          child: Card(
-            elevation: 5,
-            child: ListTile(
-              title: Text(appLockInfo.appName),
-            ),
+          padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
+          child: ListTile(
+            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
+            contentPadding: const EdgeInsets.only(left: 8),
+            title: Text(appLockInfo.appName),
+            tileColor: Colors.black45,
           ),
         ));
   }

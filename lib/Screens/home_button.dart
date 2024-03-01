@@ -35,6 +35,7 @@ class HomeButton extends StatelessWidget {
 
   generateAppLockInfoList() async {
     List<AppInfo> installedApps = await InstalledApps.getInstalledApps(true, true);
+    UserPreferences.clearUserPreferences();
     for (AppInfo app in installedApps) {
       String appPkgName = app.packageName;
       String appName = app.name;
