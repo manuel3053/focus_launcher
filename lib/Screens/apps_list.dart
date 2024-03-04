@@ -13,7 +13,13 @@ class AppsList extends StatefulWidget {
 
 class _AppsListState extends State<AppsList>{
   late ScrollController controller;
-  
+
+  @override
+  void dispose() {
+    controller.dispose();
+    widget.appLockInfoList?.clear();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
