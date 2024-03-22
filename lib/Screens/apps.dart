@@ -3,8 +3,6 @@ import 'package:focus_launcher/Functions/user_preferences.dart';
 import 'package:focus_launcher/Screens/apps_list.dart';
 import 'package:flutter/material.dart';
 
-import 'apps_pages.dart';
-
 class AppsScreen extends StatefulWidget {
   const AppsScreen({super.key});
   @override
@@ -55,9 +53,8 @@ class _AppsScreenState extends State<AppsScreen> {
                 }
                 );
               },
-              decoration: const InputDecoration(
+              decoration:  const InputDecoration(
                 contentPadding: EdgeInsets.only(left: 20, top: 10, bottom: 10),
-                border: InputBorder.none,
                 labelText: 'Search...',
               ),
             ),

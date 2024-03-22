@@ -18,10 +18,13 @@ class AppsCard extends StatelessWidget{
         child: Padding(
           padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
           child: ListTile(
-            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
+            shape: const RoundedRectangleBorder(
+              side: BorderSide(color: Colors.white, width: 1),
+                borderRadius: BorderRadius.all(Radius.circular(20)
+                )),
             contentPadding: const EdgeInsets.only(left: 8),
             title: Text(appLockInfo.appName),
-            tileColor: Colors.black45,
+            tileColor: Colors.black,
           ),
         ));
   }

@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:focus_launcher/Provider/app_provider.dart';
 import 'package:focus_launcher/Screens/home_button.dart';
@@ -23,7 +24,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(brightness: Brightness.dark),
+      theme: ThemeData(
+          useMaterial3: true,
+          scaffoldBackgroundColor: Colors.black,
+          colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.black,
+                  brightness: Brightness.dark
+          ),
+          brightness: Brightness.dark
+      ),
       darkTheme: ThemeData(
           brightness: Brightness.dark,
           textTheme: const TextTheme(labelLarge: TextStyle(fontSize: 40))),
@@ -44,17 +53,7 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            //HomeWidget(),
-            HomeButton(),
-          ],
-        ),
-      ),
+      body: Center(child: HomeButton()),
     );
   }
 }
