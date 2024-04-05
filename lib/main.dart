@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:focus_launcher/Provider/app_provider.dart';
 import 'package:focus_launcher/Screens/home_button.dart';
-import 'package:focus_launcher/Screens/home_widget.dart';
 import 'package:provider/provider.dart';
 
 import 'Functions/user_preferences.dart';
@@ -10,10 +9,6 @@ import 'Functions/user_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await UserPreferences.init();
-  /*runApp(ChangeNotifierProvider<AppLockInfoProvider>(
-    child: const MyApp(),
-    create: (context) => AppLockInfoProvider(),
-  ));*/
   runApp(const MyApp());
 }
 

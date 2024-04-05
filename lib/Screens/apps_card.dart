@@ -13,8 +13,10 @@ class AppsCard extends StatelessWidget{
           InstalledApps.startApp(appLockInfo.appPkgName);
           Navigator.pop(context);
         },
-        onLongPress: () =>
-            InstalledApps.openSettings(appLockInfo.appPkgName),
+        onLongPress: () {
+            InstalledApps.openSettings(appLockInfo.appPkgName);
+            Navigator.pop(context);
+            },
         child: Padding(
           padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
           child: ListTile(

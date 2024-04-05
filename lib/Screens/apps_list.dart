@@ -9,27 +9,18 @@ class AppsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onHorizontalDragEnd: (e) => Navigator.pop(context),
-      child: ListView.builder(
-
-        //addAutomaticKeepAlives: false,
-        //addRepaintBoundaries: false,
-        padding: const EdgeInsets.only(
-            bottom: 70,
-            top: 40), //TODO: trovare una soluzione migliore del padding
-        reverse: isReverse,
-        itemCount: appLockInfoList?.length,
-        //itemCount: 5,
-        itemBuilder: (context, index) {
-          //AppLockInfo appLockInfo= _appLockInfoList[index];
-          return appLockInfoList![index].isVisible == true
-              ? AppsCard(
-            appLockInfo: appLockInfoList![index],
-          )
-              : const SizedBox.shrink();
-        },
-      ),
+    return ListView.builder(
+      padding: const EdgeInsets.only(
+          bottom: 70,
+          top: 40), //TODO: trovare una soluzione migliore del padding
+      reverse: isReverse,
+      itemCount: appLockInfoList?.length,
+      //itemCount: 5,
+      itemBuilder: (context, index) {
+        return AppsCard(
+          appLockInfo: appLockInfoList![index],
+        );
+      },
     );
   }
 

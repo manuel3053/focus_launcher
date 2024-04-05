@@ -11,7 +11,8 @@ class AppsScreen extends StatefulWidget {
 
 class _AppsScreenState extends State<AppsScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final Future<List<AppLockInfo>> _appLockInfoList = UserPreferences.getAppLockInfoList();
+  final Future<List<AppLockInfo>> _appLockInfoList =
+      UserPreferences.getAppLockInfoList();
   bool _isReverse = false;
 
   @override
@@ -26,7 +27,14 @@ class _AppsScreenState extends State<AppsScreen> {
           }
           return Scaffold(
             backgroundColor: Colors.black,
-            body: AppsList(appLockInfoList: snapshot.data, isReverse: _isReverse,),
+            body: GestureDetector(
+                onHorizontalDragEnd: (e) => Navigator.pop(context),
+                child: AppsList(
+                  appLockInfoList: snapshot.data
+                      ?.where((app) => app.isVisible == true)
+                      .toList(),
+                  isReverse: _isReverse,
+                )),
             bottomSheet: TextField(
               //Quando la textfield ha il focus continua a far ricaricare il widget
               //autofocus: true,
@@ -34,16 +42,14 @@ class _AppsScreenState extends State<AppsScreen> {
               onChanged: (String filter) {
                 setState(() {
                   filterAppTimerInfo(filter, snapshot.data);
-                  if(filter.isEmpty) {
+                  if (filter.isEmpty) {
                     _isReverse = false;
-                  }
-                  else{
+                  } else {
                     _isReverse = true;
                   }
-                }
-                );
+                });
               },
-              decoration:  const InputDecoration(
+              decoration: const InputDecoration(
                 contentPadding: EdgeInsets.only(left: 20, top: 10, bottom: 10),
                 labelText: 'Search...',
               ),
@@ -65,5 +71,4 @@ class _AppsScreenState extends State<AppsScreen> {
       }
     }
   }
-
 }
