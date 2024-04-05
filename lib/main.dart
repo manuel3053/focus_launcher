@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-          useMaterial3: true,
+          //useMaterial3: true,
           scaffoldBackgroundColor: Colors.black,
           colorScheme: ColorScheme.fromSeed(
               seedColor: Colors.black,
@@ -53,7 +53,10 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Center(child: HomeButton()),
+      backgroundColor: Colors.black,
+      body: ColoredBox(
+        color: Colors.black,
+          child: Center(child: HomeButton())),
     );
   }
 }

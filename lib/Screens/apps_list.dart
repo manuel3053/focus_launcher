@@ -12,13 +12,11 @@ class AppsList extends StatefulWidget {
 }
 
 class _AppsListState extends State<AppsList>{
-  late ScrollController controller;
 
   @override
   void dispose() {
-    controller.dispose();
-    widget.appLockInfoList?.clear();
     super.dispose();
+    widget.appLockInfoList?.clear();
   }
 
   @override
@@ -26,6 +24,7 @@ class _AppsListState extends State<AppsList>{
     return GestureDetector(
       onHorizontalDragEnd: (e) => Navigator.pop(context),
       child: ListView.builder(
+
         //addAutomaticKeepAlives: false,
         //addRepaintBoundaries: false,
         padding: const EdgeInsets.only(

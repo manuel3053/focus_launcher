@@ -10,25 +10,9 @@ class AppsScreen extends StatefulWidget {
 }
 
 class _AppsScreenState extends State<AppsScreen> {
-  late TextEditingController _searchController;
-  late Future<List<AppLockInfo>> _appLockInfoList;
+  final TextEditingController _searchController = TextEditingController();
+  final Future<List<AppLockInfo>> _appLockInfoList = UserPreferences.getAppLockInfoList();
   bool _isReverse = false;
-  int counter = 0;
-
-  @override
-  void initState() {
-    //_appLockInfoList = Provider.of<AppLockInfoProvider>(context, listen: false).appLockInfoList;
-    _appLockInfoList = UserPreferences.getAppLockInfoList();
-    //counter = _appLockInfoList.length;
-    _searchController = TextEditingController();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +25,8 @@ class _AppsScreenState extends State<AppsScreen> {
             return Text(snapshot.error.toString());
           }
           return Scaffold(
+            backgroundColor: Colors.black,
             body: AppsList(appLockInfoList: snapshot.data, isReverse: _isReverse,),
-            //body: AppsPages(appLockInfoList: snapshot.data),
             bottomSheet: TextField(
               //Quando la textfield ha il focus continua a far ricaricare il widget
               //autofocus: true,
@@ -82,41 +66,3 @@ class _AppsScreenState extends State<AppsScreen> {
     }
   }
 }
-
-/*
-return Scaffold(
-          bottomSheet: TextField(
-            autofocus: true,
-            controller: _searchController,
-            onChanged: (String filter) {
-              setState(() {
-                _appLockInfoList = filterAppTimerInfo(filter, _appLockInfoList);
-                if(filter.isEmpty) {
-                  _isReverse = false;
-                }
-                else{
-                  _isReverse = true;
-                }
-              }
-              );
-            },
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.only(left: 20),
-              border: InputBorder.none,
-              labelText: 'Search...',
-            ),
-          ),
-          body: GestureDetector(
-            onHorizontalDragEnd: (e) => Navigator.pop(context),
-            child: ListView.builder(
-              padding: const EdgeInsets.only(bottom: 70,top: 40), //TODO: trovare una soluzione migliore del padding
-              reverse: _isReverse,
-              itemCount: counter,
-              itemBuilder: (context, index) {
-                //AppLockInfo appLockInfo= _appLockInfoList[index];
-                return _appLockInfoList[index].isVisible==true ? AppsCard(appLockInfo: _appLockInfoList[index],):const Divider(height: 0,);
-              },
-            ),
-          ),
-        );
-*/
