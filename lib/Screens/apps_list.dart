@@ -2,22 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:focus_launcher/Classes/app_lock_info.dart';
 import 'apps_card.dart';
 
-class AppsList extends StatefulWidget {
+class AppsList extends StatelessWidget {
   final List<AppLockInfo>? appLockInfoList;
   final bool isReverse;
   const AppsList({super.key, required this.appLockInfoList, required this.isReverse});
-
-  @override
-  State<AppsList> createState() => _AppsListState();
-}
-
-class _AppsListState extends State<AppsList>{
-
-  @override
-  void dispose() {
-    super.dispose();
-    widget.appLockInfoList?.clear();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +18,14 @@ class _AppsListState extends State<AppsList>{
         padding: const EdgeInsets.only(
             bottom: 70,
             top: 40), //TODO: trovare una soluzione migliore del padding
-        reverse: widget.isReverse,
-        itemCount: widget.appLockInfoList?.length,
+        reverse: isReverse,
+        itemCount: appLockInfoList?.length,
         //itemCount: 5,
         itemBuilder: (context, index) {
           //AppLockInfo appLockInfo= _appLockInfoList[index];
-          return widget.appLockInfoList![index].isVisible == true
+          return appLockInfoList![index].isVisible == true
               ? AppsCard(
-            appLockInfo: widget.appLockInfoList![index],
+            appLockInfo: appLockInfoList![index],
           )
               : const SizedBox.shrink();
         },

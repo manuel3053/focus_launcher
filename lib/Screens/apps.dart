@@ -34,6 +34,12 @@ class _AppsScreenState extends State<AppsScreen> {
               onChanged: (String filter) {
                 setState(() {
                   filterAppTimerInfo(filter, snapshot.data);
+                  if(filter.isEmpty) {
+                    _isReverse = false;
+                  }
+                  else{
+                    _isReverse = true;
+                  }
                 }
                 );
               },
@@ -58,11 +64,6 @@ class _AppsScreenState extends State<AppsScreen> {
         element.isVisible = true;
       }
     }
-    if(filter.isEmpty) {
-      _isReverse = false;
-    }
-    else{
-      _isReverse = true;
-    }
   }
+
 }
