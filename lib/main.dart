@@ -1,14 +1,13 @@
 
 import 'package:flutter/material.dart';
-import 'package:focus_launcher/Provider/app_provider.dart';
+import 'package:focus_launcher/Functions/storage.dart';
 import 'package:focus_launcher/Screens/home_button.dart';
-import 'package:provider/provider.dart';
 
-import 'Functions/user_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await UserPreferences.init();
+  //await UserPreferences.init();
+  AppsStorage().writeInstalledAppsToFile();
   runApp(const MyApp());
 }
 

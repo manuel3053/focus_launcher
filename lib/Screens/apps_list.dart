@@ -7,8 +7,11 @@ class AppsList extends StatelessWidget {
   final bool isReverse;
   const AppsList({super.key, required this.appLockInfoList, required this.isReverse});
 
+
+
   @override
   Widget build(BuildContext context) {
+
     return ListView.builder(
       padding: const EdgeInsets.only(
           bottom: 70,

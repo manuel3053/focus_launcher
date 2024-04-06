@@ -1,9 +1,7 @@
+
+
 import 'package:flutter/material.dart';
-import 'package:installed_apps/app_info.dart';
-import 'package:installed_apps/installed_apps.dart';
-import 'package:provider/provider.dart';
-import '../Functions/user_preferences.dart';
-import '../Provider/app_provider.dart';
+import 'package:focus_launcher/Functions/storage.dart';
 import 'apps.dart';
 
 class HomeButton extends StatelessWidget {
@@ -16,7 +14,7 @@ class HomeButton extends StatelessWidget {
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const AppsScreen(),
+              builder: (context) => AppsScreen(storage: AppsStorage(),),
             ));
       },
       child: const Icon(
@@ -25,7 +23,7 @@ class HomeButton extends StatelessWidget {
       ),
       onLongPress: () async {
         //Provider.of<AppLockInfoProvider>(context, listen: false).generateAppLockInfoList();
-        generateAppLockInfoList();
+        //appsStorage.writeInstalledAppsToFile();
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Completed"),
         ));
@@ -33,14 +31,15 @@ class HomeButton extends StatelessWidget {
     );
   }
 
-  generateAppLockInfoList() async {
+  /*generateAppLockInfoList() async {
     List<AppInfo> installedApps = await InstalledApps.getInstalledApps(true, true);
-    UserPreferences.clearUserPreferences();
+    //UserPreferences.clearUserPreferences();
     for (AppInfo app in installedApps) {
       String appPkgName = app.packageName;
       String appName = app.name;
-      UserPreferences.setAppLockInfo(appPkgName, appName);
+
+      //UserPreferences.setAppLockInfo(appPkgName, appName);
     }
-  }
+  }*/
 
 }
