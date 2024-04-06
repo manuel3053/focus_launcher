@@ -1,13 +1,7 @@
-
 import 'package:flutter/material.dart';
-import 'package:focus_launcher/Functions/storage.dart';
-import 'package:focus_launcher/Screens/home_button.dart';
+import 'Screens/apps.dart';
 
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  //await UserPreferences.init();
-  AppsStorage().writeInstalledAppsToFile();
+void main() {
   runApp(const MyApp());
 }
 
@@ -46,11 +40,23 @@ class _LauncherHomepageState extends State<LauncherHomepage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Colors.black,
       body: ColoredBox(
         color: Colors.black,
-          child: Center(child: HomeButton())),
+          child: Center(child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AppsScreen(),
+                  ));
+            },
+            child: const Icon(
+              Icons.apps,
+              size: 50,
+            ),
+          ))),
     );
   }
 }

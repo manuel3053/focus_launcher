@@ -1,29 +1,24 @@
+import 'dart:async';
+
 import 'package:focus_launcher/Classes/app_lock_info.dart';
 import 'package:focus_launcher/Functions/storage.dart';
 import 'package:focus_launcher/Screens/apps_list.dart';
 import 'package:flutter/material.dart';
 
 class AppsScreen extends StatefulWidget {
-  const AppsScreen({super.key, required this.storage});
-  final AppsStorage storage;
+  const AppsScreen({super.key});
   @override
   State<AppsScreen> createState() => _AppsScreenState();
 }
 
 class _AppsScreenState extends State<AppsScreen> {
   final TextEditingController _searchController = TextEditingController();
-  late Future<List<AppLockInfo>> _appLockInfoList;
+  AppsStorage storage = AppsStorage();
+  Future<List<AppLockInfo>> _appLockInfoList = AppsStorage().readAppsListFromFile();
   bool _isReverse = false;
 
   @override
-  void initState() {
-    _appLockInfoList = widget.storage.readAppsListFromFile();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-
     return FutureBuilder(
       future: _appLockInfoList,
       builder:
@@ -34,9 +29,10 @@ class _AppsScreenState extends State<AppsScreen> {
           }
           return RefreshIndicator(
             onRefresh: () async {
-              await Future.delayed(Duration(milliseconds: 1500));
+              await Future.delayed(const Duration(milliseconds: 3000));
+              await storage.writeInstalledAppsToFile();
               setState(() {
-                widget.storage.writeInstalledAppsToFile();
+                _appLockInfoList = storage.readAppsListFromFile();
               });
               initState();
             },

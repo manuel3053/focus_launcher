@@ -12,7 +12,6 @@ class AppsStorage{
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    print(path);
     return File('$path/apps.txt');
   }
 
@@ -21,8 +20,6 @@ class AppsStorage{
     deleteFileContent();
     for (AppInfo app in installedApps) {
       await writeAppToFile(app.name, app.packageName);
-      //print(app.name);
-      print(app.packageName);
     }
   }
 
