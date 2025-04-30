@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:installed_apps/app_info.dart';
-import 'package:installed_apps/installed_apps.dart';
+import 'package:flutter/services.dart';
 
 class AppsCard extends StatelessWidget {
-  final AppInfo appInfo;
-  const AppsCard({super.key, required this.appInfo});
+  final String packageName;
+  final String label;
+  static const platform = MethodChannel('com.example.focus_launcher/apps');
+
+  const AppsCard({super.key, required this.packageName, this.label = "sus"});
 
   @override
   Widget build(BuildContext context) {
@@ -12,11 +14,13 @@ class AppsCard extends StatelessWidget {
       padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
       child: ListTile(
         onTap: () {
-          InstalledApps.startApp(appInfo.packageName);
+          // InstalledApps.startApp(appInfo.packageName);
+          platform.invokeMethod('openApp', {"packageName": packageName});
           Navigator.pop(context);
         },
         onLongPress: () {
-          InstalledApps.openSettings(appInfo.packageName);
+          // InstalledApps.openSettings(appInfo.packageName);
+          platform.invokeMethod('openInSettings', {"packageName": packageName});
           Navigator.pop(context);
         },
         shape: const RoundedRectangleBorder(
@@ -24,7 +28,7 @@ class AppsCard extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
         contentPadding: const EdgeInsets.only(left: 8),
-        title: Text(appInfo.name),
+        title: Text(label),
         tileColor: Colors.black,
       ),
     );

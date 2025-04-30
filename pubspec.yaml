@@ -37,8 +37,6 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: ^0.20.2
-  installed_apps: 
-    git: https://github.com/VB10/installed_apps
   path_provider: ^2.1.2
   get: ^4.6.6
   # upgrade: ^0.0.8

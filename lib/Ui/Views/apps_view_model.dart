@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:focus_launcher/Utils/command.dart';
-import 'package:installed_apps/app_info.dart';
 
 import '../../Data/app_repository.dart';
 import '../../Utils/result.dart';
@@ -16,7 +15,7 @@ class AppsViewModel extends ChangeNotifier {
     loadApps = Command0(_loadApps);
   }
 
-  Set<AppInfo> get apps => _appRepository.getAppsByName(filter);
+  Map<String, String> get apps => _appRepository.getAppsByName(filter);
 
   Future<Result> _loadApps() async {
     filter = "";

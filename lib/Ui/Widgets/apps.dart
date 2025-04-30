@@ -38,7 +38,10 @@ class _AppsScreenState extends State<AppsScreen> {
                     itemCount: widget.viewModel.apps.length,
                     itemBuilder: (context, index) {
                       return AppsCard(
-                        appInfo: widget.viewModel.apps.elementAt(index),
+                        packageName: widget.viewModel.apps.keys.elementAt(
+                          index,
+                        ),
+                        label: widget.viewModel.apps.values.elementAt(index),
                       );
                     },
                   ),
