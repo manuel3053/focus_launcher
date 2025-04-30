@@ -18,7 +18,7 @@ class MainActivity : FlutterActivity() {
     MethodChannel(flutterEngine.getDartExecutor(), CHANNEL).setMethodCallHandler {
       call, result ->
         when(call.method) {
-          "getInstalledApps" -> result.success(getInstalledApps());
+          "getInstalledApps" -> Thread { result.success(getInstalledApps()) }.start();
           "openInSettings" -> { 
             val packageName = call.argument<String>("packageName");
             if (packageName != null) {
