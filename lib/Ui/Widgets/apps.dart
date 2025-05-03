@@ -14,6 +14,12 @@ class _AppsScreenState extends State<AppsScreen> {
   bool showSearch = false;
 
   @override
+  void dispose() {
+    widget.viewModel.setFilter("");
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -78,7 +84,7 @@ class _AppsScreenState extends State<AppsScreen> {
               backgroundColor: Colors.white,
               onPressed: () {
                 setState(() {
-                  widget.viewModel.loadApps.execute();
+                  widget.viewModel.refresh.execute();
                 });
               },
               child: Icon(Icons.refresh),
